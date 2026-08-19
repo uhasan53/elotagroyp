@@ -141,7 +141,7 @@
             <h3>নতুন সদস্য নিবন্ধন</h3>
             <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
         </div>
-        <p style="color: #e74c3c; margin-bottom: 15px; font-size: 13px;">* যেকোনো সংখ্যা ইংরেজি বা বাংলা হরফে লিখতে পারবেন।</p>
+        <p style="color: #e74c3c; margin-bottom: 15px; font-size: 13px;">* যেকোনো সংখ্যা ইংরেজি বা বাংলা হরফে লিখতে পারবেন। সেভ করার জন্য এডমিন পাসওয়ার্ড লাগবে।</p>
         <div class="form-row">
             <input type="text" id="mFullName" placeholder="সদস্যের নাম">
             <input type="text" id="mFather" placeholder="পিতার নাম">
@@ -188,7 +188,7 @@
             <input type="date" id="depositDate">
         </div>
         <div class="in-words" id="depWords">কথায়: দুই হাজার পাঁচশত টাকা মাত্র</div>
-        <button class="btn" onclick="addDeposit()">জমা প্রদান নিশ্চিত করুন</button>
+        <button class="btn" onclick="addDeposit()">জমা প্রদান নিশ্চিত করুন (অ্যাডমিন পাসওয়ার্ড প্রয়োজন)</button>
     </div>
 
     <!-- Tab 4: Member Loan Entry -->
@@ -204,7 +204,7 @@
             <input type="date" id="loanDate">
         </div>
         <div class="in-words" id="loanWords"></div>
-        <button class="btn" style="background:#f39c12;" onclick="issueLoan()">ঋণ মঞ্জুর করুন</button>
+        <button class="btn" style="background:#f39c12;" onclick="issueLoan()">ঋণ মঞ্জুর করুন (অ্যাডমিন পাসওয়ার্ড প্রয়োজন)</button>
     </div>
 
     <!-- Tab 5: Land Mortgage Module -->
@@ -221,7 +221,7 @@
             <input type="date" id="mgDate">
         </div>
         <div class="in-words" id="mgWords"></div>
-        <button class="btn" style="background:#e74c3c;" onclick="addMortgage()">বন্ধক যুক্ত করুন</button>
+        <button class="btn" style="background:#e74c3c;" onclick="addMortgage()">বন্ধক যুক্ত করুন (অ্যাডমিন পাসওয়ার্ড প্রয়োজন)</button>
         <table>
             <thead>
                 <tr>
@@ -248,7 +248,7 @@
             <input type="date" id="expDate">
         </div>
         <div class="in-words" id="expWords"></div>
-        <button class="btn" style="background:#d35400;" onclick="addExpense()">খরচ জমা করুন</button>
+        <button class="btn" style="background:#d35400;" onclick="addExpense()">খরচ জমা করুন (অ্যাডমিন পাসওয়ার্ড প্রয়োজন)</button>
         <table>
             <thead>
                 <tr>
@@ -283,7 +283,7 @@
             <input type="date" id="bankDate">
         </div>
         <div class="in-words" id="bankWords"></div>
-        <button class="btn" style="background:#8e44ad;" onclick="addBankTransaction()">লেনদেন সম্পন্ন করুন</button>
+        <button class="btn" style="background:#8e44ad;" onclick="addBankTransaction()">লেনদেন সম্পন্ন করুন (অ্যাডমিন পাসওয়ার্ড প্রয়োজন)</button>
         <table>
             <thead>
                 <tr>
@@ -310,7 +310,7 @@
             <input type="text" id="incAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'incWords')">
         </div>
         <div class="in-words" id="incWords"></div>
-        <button class="btn" style="background:#16a085;" onclick="addAnnualIncome()">আয়ের হিসাব জমা করুন</button>
+        <button class="btn" style="background:#16a085;" onclick="addAnnualIncome()">আয়ের হিসাব জমা করুন (অ্যাডমিন পাসওয়ার্ড প্রয়োজন)</button>
         
         <table style="margin-top: 20px;">
             <thead>
@@ -396,7 +396,7 @@
     window.expenses = [];
     window.bankTxns = [];
     window.annualIncomes = [];
-    window.adminPassword = "1234";
+    window.adminPassword = "1234"; // আপনার এডমিন পাসওয়ার্ড
 
     const dbRef = ref(db, 'samity_data');
     onValue(dbRef, (snapshot) => {
@@ -437,6 +437,15 @@
 <script>
     const bnNums = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
     const enNums = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+    function checkAdminAuth() {
+        let passInput = prompt("অ্যাকশনটি নিশ্চিত করতে অ্যাডমিন পাসওয়ার্ড দিন:");
+        if (passInput !== window.adminPassword) {
+            if (passInput !== null) alert('ভুল পাসওয়ার্ড!');
+            return false;
+        }
+        return true;
+    }
 
     function parseBanglaNum(str) {
         if (!str) return 0;
@@ -646,11 +655,7 @@
             return;
         }
 
-        let passInput = prompt("সদস্য এন্ট্রি ফাইনাল সেভ করতে অ্যাডমিন পাসওয়ার্ড দিন:");
-        if (passInput !== window.adminPassword) {
-            if (passInput !== null) alert('ভুল পাসওয়ার্ড! সদস্য সেভ করা হয়নি।');
-            return;
-        }
+        if (!checkAdminAuth()) return;
 
         let photoInput = document.getElementById('mPhoto').files[0];
         let nidPhotoInput = document.getElementById('mNidPhoto').files[0];
@@ -663,30 +668,202 @@
             savings, loan, photo: photoUrl, nidPhoto: nidUrl
         });
 
-        // Clear input fields
-        ['mFullName', 'mFather', 'mMother', 'mMobile', 'mRole', 'mAddress', 'mNid', 'mNominee', 'mRelation'].forEach(id => {
-            document.getElementById(id).value = '';
-        });
+        window.saveData();
+
+        document.getElementById('mFullName').value = '';
+        document.getElementById('mFather').value = '';
+        document.getElementById('mMother').value = '';
+        document.getElementById('mMobile').value = '';
+        document.getElementById('mRole').value = '';
+        document.getElementById('mAddress').value = '';
+        document.getElementById('mNid').value = '';
+        document.getElementById('mNominee').value = '';
+        document.getElementById('mRelation').value = '';
         document.getElementById('mInitialSavings').value = '০';
         document.getElementById('mInitialLoan').value = '০';
         document.getElementById('mPhoto').value = '';
         document.getElementById('mNidPhoto').value = '';
 
-        window.saveData();
+        alert('নতুন সদস্য সফলভাবে নিবন্ধিত হয়েছেন!');
+        openTab('tab-members', document.querySelectorAll('.tab-btn')[0]);
     }
 
-    function deleteMember(index) {
-        let pass = prompt("সদস্য মুছে ফেলতে অ্যাডমিন পাসওয়ার্ড দিন:");
-        if (pass === window.adminPassword) {
-            window.members.splice(index, 1);
+    function updateLoanEligibleInfo() {
+        let select = document.getElementById('loanMemberSelect');
+        if (!select || select.value === "" || !window.members || window.members.length === 0) return;
+        let idx = select.value;
+        let member = window.members[idx];
+        if (member) {
+            let maxLoan = Math.floor((member.savings || 0) * 0.8);
+            document.getElementById('loanEligibleText').value = `সর্বোচ্চ ঋণ প্রাপ্য: ${toBanglaNum(maxLoan)} টাকা (৮০%)`;
+        }
+    }
+
+    function addDeposit() {
+        let select = document.getElementById('depositMemberSelect');
+        if (!select || select.value === "") {
+            alert('কোন সদস্য নির্বাচন করা হয়নি।');
+            return;
+        }
+        let idx = select.value;
+        let amount = parseBanglaNum(document.getElementById('depositAmount').value);
+        if (amount <= 0) {
+            alert('সঠিক জমার পরিমাণ লিখুন।');
+            return;
+        }
+
+        if (!checkAdminAuth()) return;
+
+        window.members[idx].savings = (window.members[idx].savings || 0) + amount;
+        window.saveData();
+        alert('সঞ্চয় জমা সফল হয়েছে!');
+    }
+
+    function issueLoan() {
+        let select = document.getElementById('loanMemberSelect');
+        if (!select || select.value === "") {
+            alert('কোন সদস্য নির্বাচন করা হয়নি।');
+            return;
+        }
+        let idx = select.value;
+        let amount = parseBanglaNum(document.getElementById('loanAmount').value);
+        let member = window.members[idx];
+        let maxLoan = Math.floor((member.savings || 0) * 0.8);
+
+        if (amount <= 0) {
+            alert('সঠিক ঋণের পরিমাণ লিখুন।');
+            return;
+        }
+        if (amount > maxLoan) {
+            alert(`ঋণের পরিমাণ সর্বোচ্চ সীমা (${toBanglaNum(maxLoan)} টাকা) অতিক্রম করতে পারবে না।`);
+            return;
+        }
+
+        if (!checkAdminAuth()) return;
+
+        window.members[idx].loan = (window.members[idx].loan || 0) + amount;
+        window.saveData();
+        alert('ঋণ মঞ্জুর করা হয়েছে!');
+    }
+
+    function addMortgage() {
+        let name = document.getElementById('mgName').value.trim();
+        let phone = document.getElementById('mgPhone').value.trim();
+        let land = document.getElementById('mgLand').value.trim();
+        let amount = parseBanglaNum(document.getElementById('mgAmount').value);
+        let date = document.getElementById('mgDate').value;
+
+        if (!name || amount <= 0) {
+            alert('বন্ধকদাতার নাম এবং সঠিক টাকার পরিমাণ দিন।');
+            return;
+        }
+
+        if (!checkAdminAuth()) return;
+
+        window.mortgages.push({ name, phone, land, amount, date });
+        window.saveData();
+
+        document.getElementById('mgName').value = '';
+        document.getElementById('mgPhone').value = '';
+        document.getElementById('mgLand').value = '';
+        document.getElementById('mgAmount').value = '';
+        document.getElementById('mgWords').innerText = '';
+        alert('জমির বন্ধক যুক্ত করা হয়েছে!');
+    }
+
+    function addExpense() {
+        let title = document.getElementById('expTitle').value.trim();
+        let amount = parseBanglaNum(document.getElementById('expAmount').value);
+        let date = document.getElementById('expDate').value;
+
+        if (!title || amount <= 0) {
+            alert('খরচের বিবরণ ও সঠিক পরিমাণ লিখুন।');
+            return;
+        }
+
+        if (!checkAdminAuth()) return;
+
+        window.expenses.push({ title, amount, date });
+        window.saveData();
+
+        document.getElementById('expTitle').value = '';
+        document.getElementById('expAmount').value = '';
+        document.getElementById('expWords').innerText = '';
+        alert('খরচ যুক্ত করা হয়েছে!');
+    }
+
+    function deleteExpense(index) {
+        if (!checkAdminAuth()) return;
+        if (confirm('আপনি কি এই খরচের হিসাবটি মুছে ফেলতে চান?')) {
+            window.expenses.splice(index, 1);
             window.saveData();
-        } else if (pass !== null) {
-            alert("ভুল পাসওয়ার্ড!");
+        }
+    }
+
+    function addBankTransaction() {
+        let type = document.getElementById('bankType').value;
+        let ref = document.getElementById('bankRef').value.trim();
+        let amount = parseBanglaNum(document.getElementById('bankAmount').value);
+        let date = document.getElementById('bankDate').value;
+
+        if (amount <= 0) {
+            alert('সঠিক পরিমাণ দিন।');
+            return;
+        }
+
+        if (!checkAdminAuth()) return;
+
+        window.bankTxns.push({ type, ref, amount, date });
+        window.saveData();
+
+        document.getElementById('bankRef').value = '';
+        document.getElementById('bankAmount').value = '';
+        document.getElementById('bankWords').innerText = '';
+        alert('ব্যাংক লেনদেন লিপিবদ্ধ করা হয়েছে!');
+    }
+
+    function deleteBankTxn(index) {
+        if (!checkAdminAuth()) return;
+        if (confirm('আপনি কি এই ব্যাংক লেনদেনটি মুছে ফেলতে চান?')) {
+            window.bankTxns.splice(index, 1);
+            window.saveData();
+        }
+    }
+
+    function addAnnualIncome() {
+        let year = document.getElementById('incYear').value.trim();
+        let source = document.getElementById('incSource').value.trim();
+        let amount = parseBanglaNum(document.getElementById('incAmount').value);
+
+        if (!year || !source || amount <= 0) {
+            alert('বছর, আয়ের উৎস এবং সঠিক পরিমাণ প্রদান করুন।');
+            return;
+        }
+
+        if (!checkAdminAuth()) return;
+
+        window.annualIncomes.push({ year, source, amount });
+        window.saveData();
+
+        document.getElementById('incYear').value = '';
+        document.getElementById('incSource').value = '';
+        document.getElementById('incAmount').value = '';
+        document.getElementById('incWords').innerText = '';
+        alert('বার্ষিক আয় যুক্ত করা হয়েছে!');
+    }
+
+    function deleteAnnualIncome(index) {
+        if (!checkAdminAuth()) return;
+        if (confirm('আপনি কি এই আয়ের বিবরণটি মুছে ফেলতে চান?')) {
+            window.annualIncomes.splice(index, 1);
+            window.saveData();
         }
     }
 
     function openEditModal(index) {
         let m = window.members[index];
+        if (!m) return;
+
         document.getElementById('editIndex').value = index;
         document.getElementById('editName').value = m.name || '';
         document.getElementById('editFather').value = m.father || '';
@@ -708,212 +885,101 @@
     }
 
     async function saveEditedMember() {
-        let pass = prompt("পরিবর্তনগুলো সেভ করতে অ্যাডমিন পাসওয়ার্ড দিন:");
-        if (pass !== window.adminPassword) {
-            if (pass !== null) alert("ভুল পাসওয়ার্ড!");
-            return;
-        }
+        if (!checkAdminAuth()) return;
 
-        let idx = document.getElementById('editIndex').value;
+        let index = document.getElementById('editIndex').value;
+        let m = window.members[index];
+
+        m.name = document.getElementById('editName').value.trim();
+        m.father = document.getElementById('editFather').value.trim();
+        m.mother = document.getElementById('editMother').value.trim();
+        m.mobile = document.getElementById('editMobile').value.trim();
+        m.role = document.getElementById('editRole').value.trim();
+        m.address = document.getElementById('editAddress').value.trim();
+        m.nid = document.getElementById('editNid').value.trim();
+        m.nominee = document.getElementById('editNominee').value.trim();
+        m.relation = document.getElementById('editRelation').value.trim();
+        m.savings = parseBanglaNum(document.getElementById('editSavings').value);
+        m.loan = parseBanglaNum(document.getElementById('editLoan').value);
+
         let photoInput = document.getElementById('editPhoto').files[0];
         let nidPhotoInput = document.getElementById('editNidPhoto').files[0];
 
-        if (photoInput) window.members[idx].photo = await fileToBase64(photoInput);
-        if (nidPhotoInput) window.members[idx].nidPhoto = await fileToBase64(nidPhotoInput);
+        if (photoInput) m.photo = await fileToBase64(photoInput);
+        if (nidPhotoInput) m.nidPhoto = await fileToBase64(nidPhotoInput);
 
-        window.members[idx].name = document.getElementById('editName').value.trim();
-        window.members[idx].father = document.getElementById('editFather').value.trim();
-        window.members[idx].mother = document.getElementById('editMother').value.trim();
-        window.members[idx].mobile = document.getElementById('editMobile').value.trim();
-        window.members[idx].role = document.getElementById('editRole').value.trim();
-        window.members[idx].address = document.getElementById('editAddress').value.trim();
-        window.members[idx].nid = document.getElementById('editNid').value.trim();
-        window.members[idx].nominee = document.getElementById('editNominee').value.trim();
-        window.members[idx].relation = document.getElementById('editRelation').value.trim();
-        window.members[idx].savings = parseBanglaNum(document.getElementById('editSavings').value);
-        window.members[idx].loan = parseBanglaNum(document.getElementById('editLoan').value);
-
+        window.saveData();
         closeEditModal();
+        alert('সদস্যের তথ্য সফলভাবে পরিবর্তন করা হয়েছে!');
+    }
+
+    function deleteMember(index) {
+        if (!checkAdminAuth()) return;
+
+        window.members.splice(index, 1);
         window.saveData();
-    }
-
-    function addDeposit() {
-        let idx = document.getElementById('depositMemberSelect').value;
-        let amount = parseBanglaNum(document.getElementById('depositAmount').value);
-        if (idx !== '' && amount > 0) {
-            window.members[idx].savings = (window.members[idx].savings || 0) + amount;
-            window.saveData();
-            alert('সফলভাবে সঞ্চয় জমা হয়েছে!');
-        }
-    }
-
-    function updateLoanEligibleInfo() {
-        let idx = document.getElementById('loanMemberSelect').value;
-        if (idx !== '' && window.members[idx]) {
-            let maxLoan = Math.floor((window.members[idx].savings || 0) * 0.80);
-            document.getElementById('loanEligibleText').value = 'সর্বোচ্চ ঋণ: ' + toBanglaNum(maxLoan) + ' টাকা';
-        }
-    }
-
-    function issueLoan() {
-        let idx = document.getElementById('loanMemberSelect').value;
-        let amount = parseBanglaNum(document.getElementById('loanAmount').value);
-        if (idx !== '' && amount > 0) {
-            let maxLoan = Math.floor((window.members[idx].savings || 0) * 0.80);
-            if (amount > maxLoan) {
-                alert('ঋণের পরিমাণ সর্বোচ্চ প্রাপ্য ঋণ (' + toBanglaNum(maxLoan) + ' টাকা) এর চেয়ে বেশি হতে পারবে না!');
-                return;
-            }
-            window.members[idx].loan = (window.members[idx].loan || 0) + amount;
-            document.getElementById('loanAmount').value = '';
-            document.getElementById('loanWords').innerText = '';
-            window.saveData();
-            alert('ঋণ বিতরণ সম্পন্ন হয়েছে!');
-        }
-    }
-
-    function addMortgage() {
-        let name = document.getElementById('mgName').value.trim();
-        let phone = document.getElementById('mgPhone').value.trim();
-        let land = document.getElementById('mgLand').value.trim();
-        let amount = parseBanglaNum(document.getElementById('mgAmount').value);
-        let date = document.getElementById('mgDate').value;
-
-        if (name && amount > 0) {
-            window.mortgages.push({ name, phone, land, amount, date });
-            document.getElementById('mgName').value = '';
-            document.getElementById('mgPhone').value = '';
-            document.getElementById('mgLand').value = '';
-            document.getElementById('mgAmount').value = '';
-            document.getElementById('mgWords').innerText = '';
-            window.saveData();
-        }
-    }
-
-    function addExpense() {
-        let title = document.getElementById('expTitle').value.trim();
-        let amount = parseBanglaNum(document.getElementById('expAmount').value);
-        let date = document.getElementById('expDate').value;
-
-        if (title && amount > 0) {
-            window.expenses.push({ title, amount, date });
-            document.getElementById('expTitle').value = '';
-            document.getElementById('expAmount').value = '';
-            document.getElementById('expWords').innerText = '';
-            window.saveData();
-        }
-    }
-
-    function deleteExpense(index) {
-        window.expenses.splice(index, 1);
-        window.saveData();
-    }
-
-    function addBankTransaction() {
-        let type = document.getElementById('bankType').value;
-        let ref = document.getElementById('bankRef').value.trim();
-        let amount = parseBanglaNum(document.getElementById('bankAmount').value);
-        let date = document.getElementById('bankDate').value;
-
-        if (amount > 0) {
-            window.bankTxns.push({ type, ref, amount, date });
-            document.getElementById('bankRef').value = '';
-            document.getElementById('bankAmount').value = '';
-            document.getElementById('bankWords').innerText = '';
-            window.saveData();
-        }
-    }
-
-    function deleteBankTxn(index) {
-        window.bankTxns.splice(index, 1);
-        window.saveData();
-    }
-
-    function addAnnualIncome() {
-        let year = document.getElementById('incYear').value.trim();
-        let source = document.getElementById('incSource').value.trim();
-        let amount = parseBanglaNum(document.getElementById('incAmount').value);
-
-        if (source && amount > 0) {
-            window.annualIncomes.push({ year, source, amount });
-            document.getElementById('incYear').value = '';
-            document.getElementById('incSource').value = '';
-            document.getElementById('incAmount').value = '';
-            document.getElementById('incWords').innerText = '';
-            window.saveData();
-        }
-    }
-
-    function deleteAnnualIncome(index) {
-        window.annualIncomes.splice(index, 1);
-        window.saveData();
+        alert('সদস্য মুছে ফেলা হয়েছে।');
     }
 
     function downloadBackup() {
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
+        let data = {
             members: window.members,
             mortgages: window.mortgages,
             expenses: window.expenses,
             bankTxns: window.bankTxns,
             annualIncomes: window.annualIncomes
-        }));
-        let downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", "ekta_group_backup.json");
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
+        };
+
+        let blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        let a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `ekta_group_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
     }
 
-    function restoreData(event) {
-        let file = event.target.files[0];
+    function restoreData(e) {
+        let file = e.target.files[0];
         if (!file) return;
+
+        if (!checkAdminAuth()) {
+            e.target.value = '';
+            return;
+        }
+
         let reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function(event) {
             try {
-                let data = JSON.parse(e.target.result);
-                let pass = prompt("ব্যাকআপ রিস্টোর নিশ্চিত করার জন্য অ্যাডমিন পাসওয়ার্ড দিন:");
-                if (pass === window.adminPassword) {
-                    window.members = data.members || [];
-                    window.mortgages = data.mortgages || [];
-                    window.expenses = data.expenses || [];
-                    window.bankTxns = data.bankTxns || [];
-                    window.annualIncomes = data.annualIncomes || [];
-                    window.saveData();
-                    alert("ডাটা সফলভাবে রিস্টোর হয়েছে!");
-                } else if (pass !== null) {
-                    alert("ভুল পাসওয়ার্ড!");
-                }
+                let data = JSON.parse(event.target.result);
+                window.members = data.members || [];
+                window.mortgages = data.mortgages || [];
+                window.expenses = data.expenses || [];
+                window.bankTxns = data.bankTxns || [];
+                window.annualIncomes = data.annualIncomes || [];
+
+                window.saveData();
+                alert('ব্যাকআপ সফলভাবে রিস্টোর করা হয়েছে!');
             } catch (err) {
-                alert("ব্যাকআপ ফাইলের ফরম্যাট ভুল!");
+                alert('ফাইলটি সঠিক ব্যাকআপ JSON ফাইল নয়!');
             }
         };
         reader.readAsText(file);
     }
 
     function resetData() {
-        let pass = prompt("সতর্কতা! সকল ডাটা মুছে যাবে। নিশ্চিত হতে অ্যাডমিন পাসওয়ার্ড দিন:");
-        if (pass === window.adminPassword) {
+        if (!checkAdminAuth()) return;
+
+        if (confirm("আপনি কি নিশ্চিত যে সমস্ত ডাটা স্থায়ীভাবে মুছে ফেলতে চান?")) {
             window.members = [];
             window.mortgages = [];
             window.expenses = [];
             window.bankTxns = [];
             window.annualIncomes = [];
+
             window.saveData();
-            alert("সকল ডাটা রিসেট করা হয়েছে।");
-        } else if (pass !== null) {
-            alert("ভুল পাসওয়ার্ড!");
+            alert('সমস্ত ডাটা সফলভাবে রিসেট করা হয়েছে।');
         }
     }
-
-    // Set today's date into date inputs by default
-    document.addEventListener('DOMContentLoaded', () => {
-        let today = new Date().toISOString().split('T')[0];
-        ['depositDate', 'loanDate', 'mgDate', 'expDate', 'bankDate'].forEach(id => {
-            let elem = document.getElementById(id);
-            if (elem) elem.value = today;
-        });
-    });
 </script>
+
 </body>
 </html>
