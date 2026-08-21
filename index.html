@@ -11,7 +11,7 @@
         
         .header { background: #2c3e50; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .header-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); border-left: 5px solid #3498db; }
         .card h3 { font-size: 13px; color: #7f8c8d; text-transform: uppercase; }
         .card p { font-size: 18px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
@@ -92,6 +92,10 @@
         <div class="card" style="border-color: #8e44ad;">
             <h3>AB Bank একাউন্ট স্থিতি</h3>
             <p id="abBankBalance">০ টাকা</p>
+        </div>
+        <div class="card" style="border-color: #2980b9; background-color: #f0f7fc;">
+            <h3>অবশিষ্ট নিট স্থিতি</h3>
+            <p id="netBalance" style="color: #2980b9;">০ টাকা</p>
         </div>
     </div>
 
@@ -392,7 +396,6 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // আপনার আসল এডমিন ইমেইল বসানো হয়েছে:
     window.adminEmail = "uhasan53@gmail.com"; 
 
     window.members = [];
@@ -401,7 +404,6 @@
     window.bankTxns = [];
     window.annualIncomes = [];
 
-    // লাইভ ডাটাবেস সিঙ্ক্রোনাইজেশন লিসেনার
     const dbRef = ref(db, 'samity_data');
     onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
@@ -418,7 +420,6 @@
         renderUI();
     });
 
-    // ডাটা সেভ ফাংশন (ইমেইল লগইন ভেরিফিকেশন সহ)
     window.saveData = async function() {
         if (!auth.currentUser) {
             let emailInput = prompt("এডমিন ইমেইল দিন:", window.adminEmail);
@@ -467,11 +468,12 @@
 
     function toBanglaNum(num) {
         if (num === null || num === undefined) return '০';
-        let s = num.toString();
+        let isNegative = num < 0;
+        let s = Math.abs(num).toString();
         for (let i = 0; i < 10; i++) {
             s = s.replace(new RegExp(enNums[i], 'g'), bnNums[i]);
         }
-        return s;
+        return isNegative ? '-' + s : s;
     }
 
     const onesB = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'উনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বায়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আটচল্লিশ', 'উনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'উনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'উনসত্তর', 'সত্তর', 'একাত্টর', 'বাহাত্তর', 'তিয়াত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'উনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চৌরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'উননব্বই', 'নব্বই', 'একানব্বই', 'বিয়ানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
@@ -609,11 +611,15 @@
         document.getElementById('annualIncomeTable').innerHTML = annualIncomeTableHtml;
         document.getElementById('totalAnnualIncomeDisplay').innerText = toBanglaNum(totalAnnualIncome) + ' টাকা';
 
+        // নিট ক্যাশ / স্থিতি গণনাসূত্র
+        let netBalance = (totalSavings + totalAnnualIncome) - (totalLoans + totalMortgages + totalExpenses);
+
         document.getElementById('totalSavings').innerText = toBanglaNum(totalSavings) + ' টাকা';
         document.getElementById('totalLoans').innerText = toBanglaNum(totalLoans) + ' টাকা';
         document.getElementById('totalMortgages').innerText = toBanglaNum(totalMortgages) + ' টাকা';
         document.getElementById('totalExpenses').innerText = toBanglaNum(totalExpenses) + ' টাকা';
         document.getElementById('abBankBalance').innerText = toBanglaNum(abBankBalance) + ' টাকা';
+        document.getElementById('netBalance').innerText = toBanglaNum(netBalance) + ' টাকা';
 
         let memberOptions = '';
         (window.members || []).forEach((m, index) => {
