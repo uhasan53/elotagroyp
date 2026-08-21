@@ -7,305 +7,372 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #eef2f5;
+            --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #333333;
-            --header-bg: #2c3e50;
+            --sidebar-bg: #2c3e50;
+            --sidebar-text: #ecf0f1;
             --border-color: #e0e0e0;
+            --primary-color: #27ae60;
         }
 
         body.dark-mode {
             --bg-color: #121212;
             --card-bg: #1e1e1e;
             --text-color: #e0e0e0;
-            --header-bg: #1f2937;
+            --sidebar-bg: #1f2937;
+            --sidebar-text: #d1d5db;
             --border-color: #333333;
         }
 
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; }
-        body { background-color: var(--bg-color); padding: 15px; color: var(--text-color); transition: all 0.3s; }
-        .container { max-width: 1200px; margin: auto; }
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Layout Architecture */
+        .app-container { display: flex; width: 100%; height: 100%; }
         
-        .header { background: var(--header-bg); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .header-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .card { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); border-left: 5px solid #3498db; }
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        .sidebar-header { padding: 0 20px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header h2 { font-size: 20px; color: #fff; }
+        .sidebar-menu { list-style: none; margin-top: 15px; flex-grow: 1; overflow-y: auto; }
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .sidebar-menu li a:hover, .sidebar-menu li.active a {
+            background: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--primary-color);
+            color: #fff;
+        }
+
+        /* Main Workspace Area */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Top Header Area */
+        .top-nav {
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .content-body { padding: 25px; }
+
+        /* Separate Page Modules */
+        .page-module { display: none; }
+        .page-module.active-page { display: block; }
+
+        /* Dashboard Components */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-color); }
         .card h3 { font-size: 13px; color: #7f8c8d; text-transform: uppercase; }
-        .card p { font-size: 18px; font-weight: bold; margin-top: 5px; }
+        .card p { font-size: 22px; font-weight: bold; margin-top: 8px; }
 
-        .chart-container { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; height: 300px; }
+        .chart-box { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 350px; margin-bottom: 25px; }
 
-        .tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .tab-btn { padding: 10px 15px; background: #ddd; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .tab-btn.active { background: #27ae60; color: white; }
+        /* Form & Table UI */
+        .form-card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 800px; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+        .form-row input, .form-row select { padding: 10px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); border-radius: 4px; flex: 1; min-width: 220px; font-size: 14px; }
+        .btn { padding: 9px 18px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-print { background: #2980b9; }
+        .btn-warning { background: #f39c12; }
+        .btn-danger { background: #e74c3c; }
 
-        .tab-content { display: none; background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-        .tab-content.active { display: block; }
-        
-        .tab-header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .in-words { font-size: 12px; color: var(--primary-color); font-weight: bold; margin-bottom: 12px; }
 
-        .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-        .form-row input, .form-row select { padding: 10px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); border-radius: 4px; flex: 1; min-width: 200px; font-size: 14px; }
-        .btn { padding: 8px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-print { background: #2980b9; color: white; }
-        .btn-warning { background: #f39c12; color: white; }
-        .btn-danger { background: #e74c3c; color: white; }
+        table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 13px; }
+        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: left; }
+        th { background: rgba(0,0,0,0.03); color: var(--text-color); }
+        .badge { background: #3498db; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; }
+        .thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; }
 
-        .in-words { font-size: 12px; color: #27ae60; font-weight: bold; margin-bottom: 10px; min-height: 16px; }
+        .status-badge { font-size: 12px; background: #27ae60; padding: 4px 8px; border-radius: 4px; color: white; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: left; vertical-align: middle; }
-        th { background: rgba(0,0,0,0.05); color: var(--text-color); }
-        .badge { background: #3498db; color: white; padding: 3px 8px; border-radius: 3px; font-size: 12px; }
-        .thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid #ccc; }
-
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow: auto; }
-        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 600px; position: relative; }
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; }
         .close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #aaa; }
-        .status-badge { font-size: 12px; background: #27ae60; padding: 4px 8px; border-radius: 4px; color: white; display: inline-block; }
 
         @media print {
-            body { background: white; color: black; padding: 0; }
-            .header-btns, .tabs, .btn, .form-row, .status-badge, .close-btn, .modal, .chart-container, #searchBox { display: none !important; }
-            .tab-content { display: none !important; box-shadow: none; padding: 0; }
-            .tab-content.active { display: block !important; }
-            .container { max-width: 100%; }
+            .sidebar, .top-nav, .btn, .form-row, .header-actions, #searchBox { display: none !important; }
+            .main-content { overflow: visible; }
+            .content-body { padding: 0; }
+            .page-module { display: none !important; }
+            .page-module.active-page { display: block !important; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h2>একতা গ্রুপ সমিতি <span class="status-badge" id="syncStatus">🔄 ক্লাউড সিঙ্ক হচ্ছে...</span></h2>
-        <div class="header-btns">
-            <button class="btn btn-warning" onclick="toggleDarkMode()">🌙 ডার্ক মোড</button>
-            <button class="btn btn-print" onclick="downloadBackup()">📥 ব্যাকআপ</button>
-            <button class="btn btn-warning" onclick="document.getElementById('restoreInput').click()">📤 রিস্টোর</button>
-            <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-            <button class="btn btn-danger" onclick="resetData()">🗑️ রিসেট</button>
+<div class="app-container">
+    <!-- Left Navigation Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>একতা গ্রুপ</h2>
+            <small style="color: #bdc3c7;">সমিতি ম্যানেজমেন্ট</small>
         </div>
+        <ul class="sidebar-menu">
+            <li class="active" onclick="navigateTo('page-dashboard', this)"><a href="#">📊 ওভারভিউ ড্যাশবোর্ড</a></li>
+            <li onclick="navigateTo('page-members', this)"><a href="#">👥 সদস্য তালিকা ও সারসংক্ষেপ</a></li>
+            <li onclick="navigateTo('page-add-member', this)"><a href="#">➕ নতুন সদস্য নিবন্ধন</a></li>
+            <li onclick="navigateTo('page-deposit', this)"><a href="#">💰 সঞ্চয় জমা</a></li>
+            <li onclick="navigateTo('page-loan', this)"><a href="#">💳 সদস্য ঋণ বিতরণ</a></li>
+            <li onclick="navigateTo('page-mortgage', this)"><a href="#">🏡 জমি বন্ধক</a></li>
+            <li onclick="navigateTo('page-expense', this)"><a href="#">📉 সমিতির খরচ</a></li>
+            <li onclick="navigateTo('page-bank', this)"><a href="#">🏦 AB Bank একাউন্ট</a></li>
+            <li onclick="navigateTo('page-annual-income', this)"><a href="#">📈 বার্ষিক আয়</a></li>
+        </ul>
     </div>
 
-    <!-- Live Balance Dashboard -->
-    <div class="stats-grid">
-        <div class="card" style="border-color: #27ae60;">
-            <h3>মোট জমা সঞ্চয়</h3>
-            <p id="totalSavings">০ টাকা</p>
+    <!-- Right Work Area -->
+    <div class="main-content">
+        <!-- Top Operational Header -->
+        <div class="top-nav">
+            <h3 id="currentPageTitle">📊 ওভারভিউ ড্যাশবোর্ড</h3>
+            <div class="header-actions">
+                <span class="status-badge" id="syncStatus">🔄 ক্লাউড সিঙ্ক হচ্ছে...</span>
+                <button class="btn btn-warning" onclick="toggleDarkMode()">🌙 ডার্ক মোড</button>
+                <button class="btn btn-print" onclick="downloadBackup()">📥 ব্যাকআপ</button>
+                <button class="btn btn-warning" onclick="document.getElementById('restoreInput').click()">📤 রিস্টোর</button>
+                <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
+                <button class="btn btn-danger" onclick="resetData()">🗑️ রিসেট</button>
+            </div>
         </div>
-        <div class="card" style="border-color: #f39c12;">
-            <h3>মোট সদস্য ঋণ</h3>
-            <p id="totalLoans">০ টাকা</p>
-        </div>
-        <div class="card" style="border-color: #e74c3c;">
-            <h3>জমি বন্ধক প্রদান</h3>
-            <p id="totalMortgages">০ টাকা</p>
-        </div>
-        <div class="card" style="border-color: #d35400;">
-            <h3>মোট খরচ</h3>
-            <p id="totalExpenses">০ টাকা</p>
-        </div>
-        <div class="card" style="border-color: #8e44ad;">
-            <h3>AB Bank স্থিতি</h3>
-            <p id="abBankBalance">০ টাকা</p>
-        </div>
-        <div class="card" style="border-color: #16a085;">
-            <h3>বার্ষিক আয়</h3>
-            <p id="totalAnnualIncome">০ টাকা</p>
-        </div>
-        <div class="card" style="border-color: #2980b9; background-color: rgba(41, 128, 185, 0.1);">
-            <h3>অবশিষ্ট নিট স্থিতি</h3>
-            <p id="netBalance" style="color: #2980b9;">০ টাকা</p>
-        </div>
-    </div>
 
-    <!-- Chart Dashboard -->
-    <div class="chart-container">
-        <canvas id="financeChart"></canvas>
-    </div>
+        <div class="content-body">
+            
+            <!-- PAGE 1: STANDALONE DASHBOARD PAGE -->
+            <div id="page-dashboard" class="page-module active-page">
+                <div class="stats-grid">
+                    <div class="card" style="border-color: #27ae60;">
+                        <h3>মোট জমা সঞ্চয়</h3>
+                        <p id="totalSavings">০ টাকা</p>
+                    </div>
+                    <div class="card" style="border-color: #f39c12;">
+                        <h3>মোট সদস্য ঋণ</h3>
+                        <p id="totalLoans">০ টাকা</p>
+                    </div>
+                    <div class="card" style="border-color: #e74c3c;">
+                        <h3>জমি বন্ধক প্রদান</h3>
+                        <p id="totalMortgages">০ টাকা</p>
+                    </div>
+                    <div class="card" style="border-color: #d35400;">
+                        <h3>মোট খরচ</h3>
+                        <p id="totalExpenses">০ টাকা</p>
+                    </div>
+                    <div class="card" style="border-color: #8e44ad;">
+                        <h3>AB Bank স্থিতি</h3>
+                        <p id="abBankBalance">০ টাকা</p>
+                    </div>
+                    <div class="card" style="border-color: #16a085;">
+                        <h3>বার্ষিক আয়</h3>
+                        <p id="totalAnnualIncome">০ টাকা</p>
+                    </div>
+                    <div class="card" style="border-color: #2980b9; background-color: rgba(41, 128, 185, 0.05);">
+                        <h3>অবশিষ্ট নিট স্থিতি</h3>
+                        <p id="netBalance" style="color: #2980b9;">০ টাকা</p>
+                    </div>
+                </div>
 
-    <!-- Tabs Menu -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="openTab('tab-members', this)">সদস্য ও সারসংক্ষেপ</button>
-        <button class="tab-btn" onclick="openTab('tab-add-member', this)">নতুন সদস্য এন্ট্রি</button>
-        <button class="tab-btn" onclick="openTab('tab-deposit', this)">মাসিক সঞ্চয় জমা</button>
-        <button class="tab-btn" onclick="openTab('tab-loan', this)">সদস্য ঋণ বিতরণ</button>
-        <button class="tab-btn" onclick="openTab('tab-mortgage', this)">জমি বন্ধক</button>
-        <button class="tab-btn" onclick="openTab('tab-expense', this)" style="background:#e67e22; color:white;">সমিতির খরচ</button>
-        <button class="tab-btn" onclick="openTab('tab-bank', this)" style="background:#8e44ad; color:white;">AB Bank হিসাব</button>
-        <button class="tab-btn" onclick="openTab('tab-annual-income', this)" style="background:#16a085; color:white;">বার্ষিক আয়</button>
-    </div>
+                <div class="chart-box">
+                    <canvas id="financeChart"></canvas>
+                </div>
+            </div>
 
-    <!-- Tab 1: Member Master Table with Search -->
-    <div id="tab-members" class="tab-content active">
-        <div class="tab-header-actions">
-            <h3>সদস্যদের তালিকা (সর্বোচ্চ ১০ জন)</h3>
-            <input type="text" id="searchBox" placeholder="🔍 নাম, ফোন বা NID দিয়ে খুঁজুন..." oninput="renderUI()" style="padding:8px; border-radius:4px; border:1px solid #ccc; width:250px;">
-            <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
-        </div>
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ক্রম</th>
-                        <th>ছবি</th>
-                        <th>নাম ও পদবী</th>
-                        <th>পিতা/মাতার নাম</th>
-                        <th>মোবাইল নম্বর</th>
-                        <th>ঠিকানা</th>
-                        <th>NID নম্বর</th>
-                        <th>নমিনী ও সম্পর্ক</th>
-                        <th>সঞ্চয় ও ঋণ</th>
-                        <th>অ্যাকশন</th>
-                    </tr>
-                </thead>
-                <tbody id="memberTable"></tbody>
-            </table>
-        </div>
-    </div>
+            <!-- PAGE 2: MEMBERS DIRECTORY -->
+            <div id="page-members" class="page-module">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <input type="text" id="searchBox" placeholder="🔍 নাম, ফোন বা NID দিয়ে খুঁজুন..." oninput="renderUI()" style="padding:8px; border-radius:4px; border:1px solid #ccc; width:280px;">
+                    <button class="btn btn-print" onclick="window.print()">🖨️ রসিদ/তালিকা প্রিন্ট</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ক্রম</th>
+                                <th>ছবি</th>
+                                <th>নাম ও পদবী</th>
+                                <th>অভিভাবক</th>
+                                <th>মোবাইল</th>
+                                <th>NID</th>
+                                <th>নমিনী</th>
+                                <th>সঞ্চয় ও ঋণ</th>
+                                <th>অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberTable"></tbody>
+                    </table>
+                </div>
+            </div>
 
-    <!-- Tab 2: New Member Entry Form -->
-    <div id="tab-add-member" class="tab-content">
-        <div class="tab-header-actions">
-            <h3>নতুন সদস্য নিবন্ধন</h3>
-        </div>
-        <div class="form-row">
-            <input type="text" id="mFullName" placeholder="সদস্যের নাম">
-            <input type="text" id="mFather" placeholder="পিতার নাম">
-        </div>
-        <div class="form-row">
-            <input type="text" id="mMother" placeholder="মাতার নাম">
-            <input type="text" id="mMobile" placeholder="মোবাইল নম্বর">
-        </div>
-        <div class="form-row">
-            <input type="text" id="mRole" placeholder="পদবী">
-            <input type="text" id="mAddress" placeholder="পূর্ণ ঠিকানা">
-        </div>
-        <div class="form-row">
-            <input type="text" id="mNid" placeholder="NID নম্বর">
-            <input type="text" id="mNominee" placeholder="নমিনীর নাম">
-        </div>
-        <div class="form-row">
-            <input type="text" id="mRelation" placeholder="নমিনীর সাথে সম্পর্ক">
-            <input type="text" id="mInitialSavings" placeholder="প্রাথমিক সঞ্চয়" value="০">
-        </div>
-        <div class="form-row">
-            <input type="text" id="mInitialLoan" placeholder="প্রাথমিক ঋণ" value="০">
-            <div style="flex:1;"><label style="font-size:12px;">ছবি:</label><input type="file" id="mPhoto" accept="image/*"></div>
-            <div style="flex:1;"><label style="font-size:12px;">NID ছবি:</label><input type="file" id="mNidPhoto" accept="image/*"></div>
-        </div>
-        <button class="btn" onclick="checkAdminPin(addNewMember)">সদস্য এন্ট্রি নিশ্চিত করুন</button>
-    </div>
+            <!-- PAGE 3: ADD MEMBER -->
+            <div id="page-add-member" class="page-module">
+                <div class="form-card">
+                    <h3 style="margin-bottom: 15px;">নতুন সদস্য নিবন্ধন ফরম</h3>
+                    <div class="form-row">
+                        <input type="text" id="mFullName" placeholder="সদস্যের নাম">
+                        <input type="text" id="mFather" placeholder="পিতার নাম">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="mMother" placeholder="মাতার নাম">
+                        <input type="text" id="mMobile" placeholder="মোবাইল নম্বর">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="mRole" placeholder="পদবী">
+                        <input type="text" id="mAddress" placeholder="পূর্ণ ঠিকানা">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="mNid" placeholder="NID নম্বর">
+                        <input type="text" id="mNominee" placeholder="নমিনীর নাম">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="mRelation" placeholder="সম্পর্ক">
+                        <input type="text" id="mInitialSavings" placeholder="প্রাথমিক সঞ্চয়" value="০">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="mInitialLoan" placeholder="প্রাথমিক ঋণ" value="০">
+                        <div style="flex:1;"><label style="font-size:12px;">ছবি:</label><input type="file" id="mPhoto" accept="image/*"></div>
+                    </div>
+                    <button class="btn" onclick="checkAdminPin(addNewMember)">নিবন্ধন সম্পন্ন করুন</button>
+                </div>
+            </div>
 
-    <!-- Tab 3: Deposit Entry -->
-    <div id="tab-deposit" class="tab-content">
-        <div class="tab-header-actions">
-            <h3>মাসিক সঞ্চয় জমা</h3>
-        </div>
-        <div class="form-row">
-            <select id="depositMemberSelect"></select>
-            <input type="text" id="depositAmount" value="২৫০০" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'depWords')">
-            <input type="date" id="depositDate">
-        </div>
-        <div class="in-words" id="depWords">কথায়: দুই হাজার পাঁচশত টাকা মাত্র</div>
-        <button class="btn" onclick="checkAdminPin(addDeposit)">জমা প্রদান নিশ্চিত করুন</button>
-    </div>
+            <!-- PAGE 4: DEPOSIT -->
+            <div id="page-deposit" class="page-module">
+                <div class="form-card">
+                    <h3 style="margin-bottom: 15px;">মাসিক সঞ্চয় জমা গ্রহণ</h3>
+                    <div class="form-row">
+                        <select id="depositMemberSelect"></select>
+                        <input type="text" id="depositAmount" value="২৫০০" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'depWords')">
+                        <input type="date" id="depositDate">
+                    </div>
+                    <div class="in-words" id="depWords">কথায়: দুই হাজার পাঁচশত টাকা মাত্র</div>
+                    <button class="btn" onclick="checkAdminPin(addDeposit)">জমা কনফার্ম করুন</button>
+                </div>
+            </div>
 
-    <!-- Tab 4: Member Loan Entry -->
-    <div id="tab-loan" class="tab-content">
-        <div class="tab-header-actions">
-            <h3>সদস্যদের ৮০% ঋণ প্রদান</h3>
-        </div>
-        <div class="form-row">
-            <select id="loanMemberSelect" onchange="updateLoanEligibleInfo()"></select>
-            <input type="text" id="loanEligibleText" disabled style="background:#eee;" placeholder="সর্বোচ্চ প্রাপ্য ঋণ">
-            <input type="text" id="loanAmount" placeholder="ঋণের পরিমাণ" oninput="updateWords(this, 'loanWords')">
-            <input type="date" id="loanDate">
-        </div>
-        <div class="in-words" id="loanWords"></div>
-        <button class="btn" style="background:#f39c12;" onclick="checkAdminPin(issueLoan)">ঋণ মঞ্জুর করুন</button>
-    </div>
+            <!-- PAGE 5: LOAN -->
+            <div id="page-loan" class="page-module">
+                <div class="form-card">
+                    <h3 style="margin-bottom: 15px;">সদস্যদের ঋণ প্রদান</h3>
+                    <div class="form-row">
+                        <select id="loanMemberSelect"></select>
+                        <input type="text" id="loanAmount" placeholder="ঋণের পরিমাণ" oninput="updateWords(this, 'loanWords')">
+                        <input type="date" id="loanDate">
+                    </div>
+                    <div class="in-words" id="loanWords"></div>
+                    <button class="btn btn-warning" onclick="checkAdminPin(issueLoan)">ঋণ মঞ্জুর করুন</button>
+                </div>
+            </div>
 
-    <!-- Tab 5: Land Mortgage -->
-    <div id="tab-mortgage" class="tab-content">
-        <div class="tab-header-actions">
-            <h3>জমি বন্ধক ব্যবস্থাপনা</h3>
-        </div>
-        <div class="form-row">
-            <input type="text" id="mgName" placeholder="বন্ধকদাতার নাম">
-            <input type="text" id="mgPhone" placeholder="মোবাইল নম্বর">
-            <input type="text" id="mgLand" placeholder="জমির বিবরণ">
-            <input type="text" id="mgAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'mgWords')">
-            <input type="date" id="mgDate">
-        </div>
-        <div class="in-words" id="mgWords"></div>
-        <button class="btn" style="background:#e74c3c;" onclick="checkAdminPin(addMortgage)">বন্ধক যুক্ত করুন</button>
-        <table>
-            <thead><tr><th>তারিখ</th><th>নাম</th><th>ফোন</th><th>জমির বিবরণ</th><th>পরিমাণ</th></tr></thead>
-            <tbody id="mortgageTable"></tbody>
-        </table>
-    </div>
+            <!-- PAGE 6: MORTGAGE -->
+            <div id="page-mortgage" class="page-module">
+                <div class="form-card" style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">নতুন জমি বন্ধক এন্ট্রি</h3>
+                    <div class="form-row">
+                        <input type="text" id="mgName" placeholder="বন্ধকদাতার নাম">
+                        <input type="text" id="mgPhone" placeholder="মোবাইল নম্বর">
+                        <input type="text" id="mgLand" placeholder="জমির বিবরণ">
+                        <input type="text" id="mgAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'mgWords')">
+                        <input type="date" id="mgDate">
+                    </div>
+                    <div class="in-words" id="mgWords"></div>
+                    <button class="btn btn-danger" onclick="checkAdminPin(addMortgage)">বন্ধক সংরক্ষণ করুন</button>
+                </div>
+                <table>
+                    <thead><tr><th>তারিখ</th><th>নাম</th><th>ফোন</th><th>জমির বিবরণ</th><th>পরিমাণ</th></tr></thead>
+                    <tbody id="mortgageTable"></tbody>
+                </table>
+            </div>
 
-    <!-- Tab 6: Expense Management -->
-    <div id="tab-expense" class="tab-content">
-        <div class="tab-header-actions">
-            <h3>সমিতির বিবিধ খরচ</h3>
-        </div>
-        <div class="form-row">
-            <input type="text" id="expTitle" placeholder="খরচের খাত">
-            <input type="text" id="expAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'expWords')">
-            <input type="date" id="expDate">
-        </div>
-        <div class="in-words" id="expWords"></div>
-        <button class="btn" style="background:#d35400;" onclick="checkAdminPin(addExpense)">খরচ জমা করুন</button>
-        <table>
-            <thead><tr><th>তারিখ</th><th>খাত</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
-            <tbody id="expenseTable"></tbody>
-        </table>
-    </div>
+            <!-- PAGE 7: EXPENSE -->
+            <div id="page-expense" class="page-module">
+                <div class="form-card" style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">সমিতির খরচের হিসাব</h3>
+                    <div class="form-row">
+                        <input type="text" id="expTitle" placeholder="খরচের খাত">
+                        <input type="text" id="expAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'expWords')">
+                        <input type="date" id="expDate">
+                    </div>
+                    <div class="in-words" id="expWords"></div>
+                    <button class="btn btn-warning" onclick="checkAdminPin(addExpense)">খরচ এন্ট্রি করুন</button>
+                </div>
+                <table>
+                    <thead><tr><th>তারিখ</th><th>খাত</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
+                    <tbody id="expenseTable"></tbody>
+                </table>
+            </div>
 
-    <!-- Tab 7: AB Bank Account Module -->
-    <div id="tab-bank" class="tab-content">
-        <div class="tab-header-actions">
-            <h3>AB Bank একাউন্ট লেনদেন</h3>
-        </div>
-        <div class="form-row">
-            <select id="bankType">
-                <option value="deposit">ব্যাংকে জমা (Deposit)</option>
-                <option value="withdraw">ব্যাংক হতে উত্তোলন (Withdrawal)</option>
-            </select>
-            <input type="text" id="bankRef" placeholder="স্লিপ নম্বর / বিবরণ">
-            <input type="text" id="bankAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'bankWords')">
-            <input type="date" id="bankDate">
-        </div>
-        <div class="in-words" id="bankWords"></div>
-        <button class="btn" style="background:#8e44ad;" onclick="checkAdminPin(addBankTransaction)">লেনদেন সম্পন্ন করুন</button>
-        <table>
-            <thead><tr><th>তারিখ</th><th>ধরন</th><th>বিবরণ</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
-            <tbody id="bankTable"></tbody>
-        </table>
-    </div>
+            <!-- PAGE 8: BANK -->
+            <div id="page-bank" class="page-module">
+                <div class="form-card" style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">AB Bank হিসাব লেনদেন</h3>
+                    <div class="form-row">
+                        <select id="bankType">
+                            <option value="deposit">ব্যাংকে জমা (Deposit)</option>
+                            <option value="withdraw">উত্তোলন (Withdrawal)</option>
+                        </select>
+                        <input type="text" id="bankRef" placeholder="স্লিপ / বিবরণ">
+                        <input type="text" id="bankAmount" placeholder="পরিমাণ" oninput="updateWords(this, 'bankWords')">
+                        <input type="date" id="bankDate">
+                    </div>
+                    <div class="in-words" id="bankWords"></div>
+                    <button class="btn" style="background:#8e44ad;" onclick="checkAdminPin(addBankTransaction)">লেনদেন যুক্ত করুন</button>
+                </div>
+                <table>
+                    <thead><tr><th>তারিখ</th><th>ধরন</th><th>বিবরণ</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
+                    <tbody id="bankTable"></tbody>
+                </table>
+            </div>
 
-    <!-- Tab 8: Annual Income Module -->
-    <div id="tab-annual-income" class="tab-content">
-        <div class="tab-header-actions">
-            <h3>সমিতির বার্ষিক আয়ের হিসাব</h3>
+            <!-- PAGE 9: ANNUAL INCOME -->
+            <div id="page-annual-income" class="page-module">
+                <div class="form-card" style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">বার্ষিক আয়ের হিসাব</h3>
+                    <div class="form-row">
+                        <input type="text" id="incYear" placeholder="বছর (যেমন: ২০২৬)">
+                        <input type="text" id="incSource" placeholder="আয়ের উৎস">
+                        <input type="text" id="incAmount" placeholder="পরিমাণ" oninput="updateWords(this, 'incWords')">
+                    </div>
+                    <div class="in-words" id="incWords"></div>
+                    <button class="btn" style="background:#16a085;" onclick="checkAdminPin(addAnnualIncome)">আয় এন্ট্রি করুন</button>
+                </div>
+                <table>
+                    <thead><tr><th>বছর</th><th>উৎস</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
+                    <tbody id="annualIncomeTable"></tbody>
+                </table>
+            </div>
+
         </div>
-        <div class="form-row">
-            <input type="text" id="incYear" placeholder="বছর (যেমন: ২০২৬)">
-            <input type="text" id="incSource" placeholder="আয়ের উৎস">
-            <input type="text" id="incAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'incWords')">
-        </div>
-        <div class="in-words" id="incWords"></div>
-        <button class="btn" style="background:#16a085;" onclick="checkAdminPin(addAnnualIncome)">আয়ের হিসাব জমা করুন</button>
-        <table>
-            <thead><tr><th>বছর</th><th>আয়ের উৎস</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
-            <tbody id="annualIncomeTable"></tbody>
-        </table>
     </div>
 </div>
 
-<!-- Digital Receipt Printable Modal -->
+<!-- Receipt Modal -->
 <div id="receiptModal" class="modal">
     <div class="modal-content" style="text-align: center; border: 2px solid #27ae60;">
         <span class="close-btn" onclick="closeReceipt()">&times;</span>
@@ -317,7 +384,7 @@
     </div>
 </div>
 
-<!-- Firebase Integration Script -->
+<!-- Firebase Script & Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -335,8 +402,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    window.adminPin = "1234"; // ডিফল্ট এডমিন পিন
-
+    window.adminPin = "1234";
     window.members = [];
     window.mortgages = [];
     window.expenses = [];
@@ -373,22 +439,20 @@
 
 <script>
     let myChart = null;
-    const bnNums = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-    const enNums = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-    function parseBanglaNum(str) {
-        if (!str) return 0;
-        let s = str.toString();
-        for (let i = 0; i < 10; i++) s = s.replace(new RegExp(bnNums[i], 'g'), enNums[i]);
-        return parseFloat(s) || 0;
+    function navigateTo(pageId, element) {
+        document.querySelectorAll('.page-module').forEach(p => p.classList.remove('active-page'));
+        document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+        
+        document.getElementById(pageId).classList.add('active-page');
+        element.classList.add('active');
+
+        // Update top title text
+        document.getElementById('currentPageTitle').innerText = element.innerText;
     }
 
-    function toBanglaNum(num) {
-        if (num === null || num === undefined) return '০';
-        let isNegative = num < 0;
-        let s = Math.abs(num).toString();
-        for (let i = 0; i < 10; i++) s = s.replace(new RegExp(enNums[i], 'g'), bnNums[i]);
-        return isNegative ? '-' + s : s;
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
     }
 
     function checkAdminPin(callback) {
@@ -400,10 +464,6 @@
         }
     }
 
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-    }
-
     function renderUI() {
         let searchQuery = (document.getElementById('searchBox')?.value || '').toLowerCase();
         let memberTableHtml = '';
@@ -413,21 +473,18 @@
             totalSavings += m.savings || 0;
             totalLoans += m.loan || 0;
 
-            if (m.name.toLowerCase().includes(searchQuery) || (m.mobile && m.mobile.includes(searchQuery)) || (m.nid && m.nid.includes(searchQuery))) {
+            if (m.name.toLowerCase().includes(searchQuery) || (m.mobile && m.mobile.includes(searchQuery))) {
                 memberTableHtml += `
                     <tr>
-                        <td>${toBanglaNum(index + 1)}</td>
+                        <td>${index + 1}</td>
                         <td><img src="${m.photo || 'https://via.placeholder.com/40'}" class="thumb"></td>
                         <td><b>${m.name}</b><br><span class="badge">${m.role || 'সদস্য'}</span></td>
-                        <td>পিতা: ${m.father || 'N/A'}<br>মাতা: ${m.mother || 'N/A'}</td>
-                        <td>${toBanglaNum(m.mobile || '')}</td>
-                        <td>${m.address || ''}</td>
-                        <td>NID: ${toBanglaNum(m.nid || '')}</td>
-                        <td>নমিনী: ${m.nominee || ''}<br>সম্পর্ক: ${m.relation || ''}</td>
-                        <td>সঞ্চয়: <b>${toBanglaNum(m.savings || 0)}</b><br>ঋণ: <span style="color:red;"><b>${toBanglaNum(m.loan || 0)}</b></span></td>
-                        <td>
-                            <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button>
-                        </td>
+                        <td>পিতা: ${m.father || 'N/A'}</td>
+                        <td>${m.mobile || ''}</td>
+                        <td>${m.nid || ''}</td>
+                        <td>${m.nominee || ''} (${m.relation || ''})</td>
+                        <td>সঞ্চয়: <b>${m.savings || 0}</b><br>ঋণ: <span style="color:red;"><b>${m.loan || 0}</b></span></td>
+                        <td><button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button></td>
                     </tr>
                 `;
             }
@@ -438,16 +495,15 @@
         let totalExpenses = (window.expenses || []).reduce((sum, e) => sum + e.amount, 0);
         let totalAnnualIncome = (window.annualIncomes || []).reduce((sum, ai) => sum + ai.amount, 0);
         let abBankBalance = (window.bankTxns || []).reduce((sum, b) => b.type === 'deposit' ? sum + b.amount : sum - b.amount, 0);
-
         let netBalance = (totalSavings + totalAnnualIncome) - (totalLoans + totalMortgages + totalExpenses);
 
-        document.getElementById('totalSavings').innerText = toBanglaNum(totalSavings) + ' টাকা';
-        document.getElementById('totalLoans').innerText = toBanglaNum(totalLoans) + ' টাকা';
-        document.getElementById('totalMortgages').innerText = toBanglaNum(totalMortgages) + ' টাকা';
-        document.getElementById('totalExpenses').innerText = toBanglaNum(totalExpenses) + ' টাকা';
-        document.getElementById('abBankBalance').innerText = toBanglaNum(abBankBalance) + ' টাকা';
-        document.getElementById('totalAnnualIncome').innerText = toBanglaNum(totalAnnualIncome) + ' টাকা';
-        document.getElementById('netBalance').innerText = toBanglaNum(netBalance) + ' টাকা';
+        document.getElementById('totalSavings').innerText = totalSavings + ' টাকা';
+        document.getElementById('totalLoans').innerText = totalLoans + ' টাকা';
+        document.getElementById('totalMortgages').innerText = totalMortgages + ' টাকা';
+        document.getElementById('totalExpenses').innerText = totalExpenses + ' টাকা';
+        document.getElementById('abBankBalance').innerText = abBankBalance + ' টাকা';
+        document.getElementById('totalAnnualIncome').innerText = totalAnnualIncome + ' টাকা';
+        document.getElementById('netBalance').innerText = netBalance + ' টাকা';
 
         let memberOptions = (window.members || []).map((m, idx) => `<option value="${idx}">${m.name}</option>`).join('');
         document.getElementById('depositMemberSelect').innerHTML = memberOptions;
@@ -464,7 +520,7 @@
             data: {
                 labels: ['মোট সঞ্চয়', 'সদস্য ঋণ', 'জমি বন্ধক', 'মোট খরচ', 'বার্ষিক আয়'],
                 datasets: [{
-                    label: 'সমিতির অর্থনৈতিক অবস্থা (টাকা)',
+                    label: 'অর্থনৈতিক ওভারভিউ (টাকা)',
                     data: [savings, loans, mortgages, expenses, income],
                     backgroundColor: ['#27ae60', '#f39c12', '#e74c3c', '#d35400', '#16a085']
                 }]
@@ -473,16 +529,9 @@
         });
     }
 
-    function openTab(tabId, btn) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
-    }
-
     function addDeposit() {
         let idx = document.getElementById('depositMemberSelect').value;
-        let amount = parseBanglaNum(document.getElementById('depositAmount').value);
+        let amount = parseFloat(document.getElementById('depositAmount').value) || 0;
         if (idx !== '' && amount > 0) {
             window.members[idx].savings = (window.members[idx].savings || 0) + amount;
             showReceipt("মাসিক সঞ্চয় জমা", window.members[idx].name, amount);
@@ -495,8 +544,8 @@
             <b>তারিখ:</b> ${new Date().toLocaleDateString('bn-BD')}<br>
             <b>সদস্যের নাম:</b> ${name}<br>
             <b>লেনদেনের ধরন:</b> ${type}<br>
-            <b>পরিমাণ:</b> ${toBanglaNum(amount)} টাকা<br>
-            <b>অবস্থা:</b> সফল (অনলাইন সিঙ্কড)
+            <b>পরিমাণ:</b> ${amount} টাকা<br>
+            <b>স্ট্যাটাস:</b> সফল (অনলাইন সিঙ্কড)
         `;
         document.getElementById('receiptModal').style.display = 'block';
     }
@@ -509,14 +558,6 @@
         window.members.splice(idx, 1);
         window.saveData();
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        let today = new Date().toISOString().split('T')[0];
-        ['depositDate', 'loanDate', 'mgDate', 'expDate', 'bankDate'].forEach(id => {
-            let elem = document.getElementById(id);
-            if (elem) elem.value = today;
-        });
-    });
 </script>
 </body>
 </html>
