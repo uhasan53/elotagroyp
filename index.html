@@ -11,7 +11,7 @@
         
         .header { background: #2c3e50; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .header-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); border-left: 5px solid #3498db; }
         .card h3 { font-size: 13px; color: #7f8c8d; text-transform: uppercase; }
         .card p { font-size: 18px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
@@ -92,6 +92,10 @@
         <div class="card" style="border-color: #8e44ad;">
             <h3>AB Bank একাউন্ট স্থিতি</h3>
             <p id="abBankBalance">০ টাকা</p>
+        </div>
+        <div class="card" style="border-color: #16a085;">
+            <h3>বার্ষিক আয়</h3>
+            <p id="totalAnnualIncome">০ টাকা</p>
         </div>
         <div class="card" style="border-color: #2980b9; background-color: #f0f7fc;">
             <h3>অবশিষ্ট নিট স্থিতি</h3>
@@ -326,10 +330,6 @@
             </thead>
             <tbody id="annualIncomeTable"></tbody>
         </table>
-        
-        <div style="margin-top: 15px; padding: 10px; background: #e8f8f5; border-radius: 5px; text-align: right;">
-            <strong>মোট বার্ষিক আয়: <span id="totalAnnualIncomeDisplay" style="color: #16a085; font-size: 16px;">০ টাকা</span></strong>
-        </div>
     </div>
 </div>
 
@@ -609,9 +609,8 @@
             `;
         });
         document.getElementById('annualIncomeTable').innerHTML = annualIncomeTableHtml;
-        document.getElementById('totalAnnualIncomeDisplay').innerText = toBanglaNum(totalAnnualIncome) + ' টাকা';
 
-        // নিট ক্যাশ / স্থিতি গণনাসূত্র
+        // অবশিষ্ট নিট স্থিতি / ক্যাশ গণনাসূত্র
         let netBalance = (totalSavings + totalAnnualIncome) - (totalLoans + totalMortgages + totalExpenses);
 
         document.getElementById('totalSavings').innerText = toBanglaNum(totalSavings) + ' টাকা';
@@ -619,6 +618,7 @@
         document.getElementById('totalMortgages').innerText = toBanglaNum(totalMortgages) + ' টাকা';
         document.getElementById('totalExpenses').innerText = toBanglaNum(totalExpenses) + ' টাকা';
         document.getElementById('abBankBalance').innerText = toBanglaNum(abBankBalance) + ' টাকা';
+        document.getElementById('totalAnnualIncome').innerText = toBanglaNum(totalAnnualIncome) + ' টাকা';
         document.getElementById('netBalance').innerText = toBanglaNum(netBalance) + ' টাকা';
 
         let memberOptions = '';
