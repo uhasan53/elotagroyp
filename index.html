@@ -3,55 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>একতা গ্রুপ - লাইভ অটোমেটিক সিঙ্ক সমিতি ব্যবস্থাপনা</title>
+    <title>একতা গ্রুপ - স্মার্ট সমিতি ব্যবস্থাপনা</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --bg-color: #eef2f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --header-bg: #2c3e50;
+            --border-color: #e0e0e0;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --header-bg: #1f2937;
+            --border-color: #333333;
+        }
+
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; }
-        body { background-color: #eef2f5; padding: 15px; color: #333; }
+        body { background-color: var(--bg-color); padding: 15px; color: var(--text-color); transition: all 0.3s; }
         .container { max-width: 1200px; margin: auto; }
         
-        .header { background: #2c3e50; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .header { background: var(--header-bg); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .header-btns { display: flex; gap: 10px; flex-wrap: wrap; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); border-left: 5px solid #3498db; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); border-left: 5px solid #3498db; }
         .card h3 { font-size: 13px; color: #7f8c8d; text-transform: uppercase; }
-        .card p { font-size: 18px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
+        .card p { font-size: 18px; font-weight: bold; margin-top: 5px; }
+
+        .chart-container { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; height: 300px; }
 
         .tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .tab-btn { padding: 10px 15px; background: #ddd; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .tab-btn.active { background: #27ae60; color: white; }
 
-        .tab-content { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+        .tab-content { display: none; background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
         .tab-content.active { display: block; }
         
-        .tab-header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .tab-header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
 
         .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-        .form-row input, .form-row select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; flex: 1; min-width: 200px; font-size: 14px; }
+        .form-row input, .form-row select { padding: 10px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); border-radius: 4px; flex: 1; min-width: 200px; font-size: 14px; }
         .btn { padding: 8px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn:hover { background: #219150; }
         .btn-print { background: #2980b9; color: white; }
-        .btn-print:hover { background: #1f618d; }
-        .btn-warning { background: #f39c12; }
-        .btn-danger { background: #e74c3c; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
 
         .in-words { font-size: 12px; color: #27ae60; font-weight: bold; margin-bottom: 10px; min-height: 16px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th, td { border: 1px solid #e0e0e0; padding: 8px; text-align: left; vertical-align: middle; }
-        th { background: #f8f9fa; color: #2c3e50; }
-        tr:nth-child(even) { background: #fdfdfd; }
+        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: left; vertical-align: middle; }
+        th { background: rgba(0,0,0,0.05); color: var(--text-color); }
         .badge { background: #3498db; color: white; padding: 3px 8px; border-radius: 3px; font-size: 12px; }
         .thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid #ccc; }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow: auto; }
-        .modal-content { background-color: #fff; margin: 5% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 700px; position: relative; }
+        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 600px; position: relative; }
         .close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #aaa; }
-        .close-btn:hover { color: #000; }
         .status-badge { font-size: 12px; background: #27ae60; padding: 4px 8px; border-radius: 4px; color: white; display: inline-block; }
 
         @media print {
-            body { background: white; padding: 0; }
-            .header-btns, .tabs, .btn, .form-row, .status-badge, .close-btn, .modal { display: none !important; }
+            body { background: white; color: black; padding: 0; }
+            .header-btns, .tabs, .btn, .form-row, .status-badge, .close-btn, .modal, .chart-container, #searchBox { display: none !important; }
             .tab-content { display: none !important; box-shadow: none; padding: 0; }
             .tab-content.active { display: block !important; }
             .container { max-width: 100%; }
@@ -62,12 +77,13 @@
 
 <div class="container">
     <div class="header">
-        <h2>একতা গ্রুপ সমিতি ব্যবস্থাপনা <span class="status-badge" id="syncStatus">🔄 ক্লাউড কানেক্ট হচ্ছে...</span></h2>
+        <h2>একতা গ্রুপ সমিতি <span class="status-badge" id="syncStatus">🔄 ক্লাউড সিঙ্ক হচ্ছে...</span></h2>
         <div class="header-btns">
-            <button class="btn btn-print" onclick="downloadBackup()">📥 ব্যাকআপ ডাউনলোড</button>
-            <button class="btn btn-warning" onclick="document.getElementById('restoreInput').click()">📤 ব্যাকআপ রিস্টোর</button>
+            <button class="btn btn-warning" onclick="toggleDarkMode()">🌙 ডার্ক মোড</button>
+            <button class="btn btn-print" onclick="downloadBackup()">📥 ব্যাকআপ</button>
+            <button class="btn btn-warning" onclick="document.getElementById('restoreInput').click()">📤 রিস্টোর</button>
             <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-            <button class="btn btn-danger" onclick="resetData()">🗑️ ডাটা রিসেট</button>
+            <button class="btn btn-danger" onclick="resetData()">🗑️ রিসেট</button>
         </div>
     </div>
 
@@ -90,17 +106,22 @@
             <p id="totalExpenses">০ টাকা</p>
         </div>
         <div class="card" style="border-color: #8e44ad;">
-            <h3>AB Bank একাউন্ট স্থিতি</h3>
+            <h3>AB Bank স্থিতি</h3>
             <p id="abBankBalance">০ টাকা</p>
         </div>
         <div class="card" style="border-color: #16a085;">
             <h3>বার্ষিক আয়</h3>
             <p id="totalAnnualIncome">০ টাকা</p>
         </div>
-        <div class="card" style="border-color: #2980b9; background-color: #f0f7fc;">
+        <div class="card" style="border-color: #2980b9; background-color: rgba(41, 128, 185, 0.1);">
             <h3>অবশিষ্ট নিট স্থিতি</h3>
             <p id="netBalance" style="color: #2980b9;">০ টাকা</p>
         </div>
+    </div>
+
+    <!-- Chart Dashboard -->
+    <div class="chart-container">
+        <canvas id="financeChart"></canvas>
     </div>
 
     <!-- Tabs Menu -->
@@ -109,16 +130,17 @@
         <button class="tab-btn" onclick="openTab('tab-add-member', this)">নতুন সদস্য এন্ট্রি</button>
         <button class="tab-btn" onclick="openTab('tab-deposit', this)">মাসিক সঞ্চয় জমা</button>
         <button class="tab-btn" onclick="openTab('tab-loan', this)">সদস্য ঋণ বিতরণ</button>
-        <button class="tab-btn" onclick="openTab('tab-mortgage', this)">জমি বন্ধক ব্যবস্থাপনা</button>
+        <button class="tab-btn" onclick="openTab('tab-mortgage', this)">জমি বন্ধক</button>
         <button class="tab-btn" onclick="openTab('tab-expense', this)" style="background:#e67e22; color:white;">সমিতির খরচ</button>
         <button class="tab-btn" onclick="openTab('tab-bank', this)" style="background:#8e44ad; color:white;">AB Bank হিসাব</button>
         <button class="tab-btn" onclick="openTab('tab-annual-income', this)" style="background:#16a085; color:white;">বার্ষিক আয়</button>
     </div>
 
-    <!-- Tab 1: Member Master Table -->
+    <!-- Tab 1: Member Master Table with Search -->
     <div id="tab-members" class="tab-content active">
         <div class="tab-header-actions">
             <h3>সদস্যদের তালিকা (সর্বোচ্চ ১০ জন)</h3>
+            <input type="text" id="searchBox" placeholder="🔍 নাম, ফোন বা NID দিয়ে খুঁজুন..." oninput="renderUI()" style="padding:8px; border-radius:4px; border:1px solid #ccc; width:250px;">
             <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
         </div>
         <div style="overflow-x: auto;">
@@ -146,9 +168,7 @@
     <div id="tab-add-member" class="tab-content">
         <div class="tab-header-actions">
             <h3>নতুন সদস্য নিবন্ধন</h3>
-            <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
         </div>
-        <p style="color: #e74c3c; margin-bottom: 15px; font-size: 13px;">* যেকোনো সংখ্যা ইংরেজি বা বাংলা হরফে লিখতে পারবেন।</p>
         <div class="form-row">
             <input type="text" id="mFullName" placeholder="সদস্যের নাম">
             <input type="text" id="mFather" placeholder="পিতার নাম">
@@ -158,7 +178,7 @@
             <input type="text" id="mMobile" placeholder="মোবাইল নম্বর">
         </div>
         <div class="form-row">
-            <input type="text" id="mRole" placeholder="পদবী (যেমন: সভাপতি, সাধারণ সদস্য)">
+            <input type="text" id="mRole" placeholder="পদবী">
             <input type="text" id="mAddress" placeholder="পূর্ণ ঠিকানা">
         </div>
         <div class="form-row">
@@ -167,27 +187,20 @@
         </div>
         <div class="form-row">
             <input type="text" id="mRelation" placeholder="নমিনীর সাথে সম্পর্ক">
-            <input type="text" id="mInitialSavings" placeholder="প্রাথমিক সঞ্চয় (টাকা)" value="০">
+            <input type="text" id="mInitialSavings" placeholder="প্রাথমিক সঞ্চয়" value="০">
         </div>
         <div class="form-row">
-            <input type="text" id="mInitialLoan" placeholder="প্রাথমিক ঋণ (টাকা)" value="০">
-            <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
-                <label style="font-size:12px; color:#555;">সদস্যের ছবি:</label>
-                <input type="file" id="mPhoto" accept="image/*">
-            </div>
-            <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
-                <label style="font-size:12px; color:#555;">NID এর ছবি:</label>
-                <input type="file" id="mNidPhoto" accept="image/*">
-            </div>
+            <input type="text" id="mInitialLoan" placeholder="প্রাথমিক ঋণ" value="০">
+            <div style="flex:1;"><label style="font-size:12px;">ছবি:</label><input type="file" id="mPhoto" accept="image/*"></div>
+            <div style="flex:1;"><label style="font-size:12px;">NID ছবি:</label><input type="file" id="mNidPhoto" accept="image/*"></div>
         </div>
-        <button class="btn" onclick="addNewMember()">সদস্য এন্ট্রি নিশ্চিত করুন (এডমিন ইমেইল প্রয়োজন)</button>
+        <button class="btn" onclick="checkAdminPin(addNewMember)">সদস্য এন্ট্রি নিশ্চিত করুন</button>
     </div>
 
-    <!-- Tab 3: Monthly Deposit Entry -->
+    <!-- Tab 3: Deposit Entry -->
     <div id="tab-deposit" class="tab-content">
         <div class="tab-header-actions">
-            <h3>মাসিক সঞ্চয় জমা (২৫০০ টাকা)</h3>
-            <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+            <h3>মাসিক সঞ্চয় জমা</h3>
         </div>
         <div class="form-row">
             <select id="depositMemberSelect"></select>
@@ -195,14 +208,13 @@
             <input type="date" id="depositDate">
         </div>
         <div class="in-words" id="depWords">কথায়: দুই হাজার পাঁচশত টাকা মাত্র</div>
-        <button class="btn" onclick="addDeposit()">জমা প্রদান নিশ্চিত করুন</button>
+        <button class="btn" onclick="checkAdminPin(addDeposit)">জমা প্রদান নিশ্চিত করুন</button>
     </div>
 
     <!-- Tab 4: Member Loan Entry -->
     <div id="tab-loan" class="tab-content">
         <div class="tab-header-actions">
             <h3>সদস্যদের ৮০% ঋণ প্রদান</h3>
-            <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
         </div>
         <div class="form-row">
             <select id="loanMemberSelect" onchange="updateLoanEligibleInfo()"></select>
@@ -211,167 +223,97 @@
             <input type="date" id="loanDate">
         </div>
         <div class="in-words" id="loanWords"></div>
-        <button class="btn" style="background:#f39c12;" onclick="issueLoan()">ঋণ মঞ্জুর করুন</button>
+        <button class="btn" style="background:#f39c12;" onclick="checkAdminPin(issueLoan)">ঋণ মঞ্জুর করুন</button>
     </div>
 
-    <!-- Tab 5: Land Mortgage Module -->
+    <!-- Tab 5: Land Mortgage -->
     <div id="tab-mortgage" class="tab-content">
         <div class="tab-header-actions">
-            <h3>বহিরাগত ব্যক্তির জমি বন্ধক হিসেব</h3>
-            <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+            <h3>জমি বন্ধক ব্যবস্থাপনা</h3>
         </div>
         <div class="form-row">
             <input type="text" id="mgName" placeholder="বন্ধকদাতার নাম">
             <input type="text" id="mgPhone" placeholder="মোবাইল নম্বর">
-            <input type="text" id="mgLand" placeholder="জমির বিবরণ/খতিয়ান/দাগ">
-            <input type="text" id="mgAmount" placeholder="প্রদত্ত ঋণের পরিমাণ" oninput="updateWords(this, 'mgWords')">
+            <input type="text" id="mgLand" placeholder="জমির বিবরণ">
+            <input type="text" id="mgAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'mgWords')">
             <input type="date" id="mgDate">
         </div>
         <div class="in-words" id="mgWords"></div>
-        <button class="btn" style="background:#e74c3c;" onclick="addMortgage()">বন্ধক যুক্ত করুন</button>
+        <button class="btn" style="background:#e74c3c;" onclick="checkAdminPin(addMortgage)">বন্ধক যুক্ত করুন</button>
         <table>
-            <thead>
-                <tr>
-                    <th>তারিখ</th>
-                    <th>নাম</th>
-                    <th>ফোন</th>
-                    <th>জমির বিবরণ</th>
-                    <th>টাকার পরিমাণ</th>
-                </tr>
-            </thead>
+            <thead><tr><th>তারিখ</th><th>নাম</th><th>ফোন</th><th>জমির বিবরণ</th><th>পরিমাণ</th></tr></thead>
             <tbody id="mortgageTable"></tbody>
         </table>
     </div>
 
-    <!-- Tab 6: Expense Management Module -->
+    <!-- Tab 6: Expense Management -->
     <div id="tab-expense" class="tab-content">
         <div class="tab-header-actions">
-            <h3>সমিতির বিবিধ খরচের হিসাব</h3>
-            <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+            <h3>সমিতির বিবিধ খরচ</h3>
         </div>
         <div class="form-row">
-            <input type="text" id="expTitle" placeholder="খরচের খাত/বিবরণ">
+            <input type="text" id="expTitle" placeholder="খরচের খাত">
             <input type="text" id="expAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'expWords')">
             <input type="date" id="expDate">
         </div>
         <div class="in-words" id="expWords"></div>
-        <button class="btn" style="background:#d35400;" onclick="addExpense()">খরচ জমা করুন</button>
+        <button class="btn" style="background:#d35400;" onclick="checkAdminPin(addExpense)">খরচ জমা করুন</button>
         <table>
-            <thead>
-                <tr>
-                    <th>তারিখ</th>
-                    <th>বিবরণ/খাত</th>
-                    <th>পরিমাণ</th>
-                    <th>অ্যাকশন</th>
-                </tr>
-            </thead>
+            <thead><tr><th>তারিখ</th><th>খাত</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
             <tbody id="expenseTable"></tbody>
         </table>
     </div>
 
-    <!-- Tab 7: AB Bank Account Management Module -->
+    <!-- Tab 7: AB Bank Account Module -->
     <div id="tab-bank" class="tab-content">
         <div class="tab-header-actions">
-            <h3>AB Bank একাউন্ট লেনদেন ট্রেকিং</h3>
-            <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
-        </div>
-        <div style="background: #f1f4f8; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #8e44ad;">
-            <p><strong>ব্যাংক নাম:</strong> AB Bank PLC</p>
-            <p><strong>একাউন্ট নাম:</strong> একতা গ্রুপ সমিতি</p>
-            <p><strong>একাউন্ট নম্বর:</strong> 4005-XXXXXX-101</p>
+            <h3>AB Bank একাউন্ট লেনদেন</h3>
         </div>
         <div class="form-row">
             <select id="bankType">
-                <option value="deposit">ব্যাংকে টাকা জমা (Deposit)</option>
+                <option value="deposit">ব্যাংকে জমা (Deposit)</option>
                 <option value="withdraw">ব্যাংক হতে উত্তোলন (Withdrawal)</option>
             </select>
-            <input type="text" id="bankRef" placeholder="বিবরণ / স্লিপ নম্বর">
+            <input type="text" id="bankRef" placeholder="স্লিপ নম্বর / বিবরণ">
             <input type="text" id="bankAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'bankWords')">
             <input type="date" id="bankDate">
         </div>
         <div class="in-words" id="bankWords"></div>
-        <button class="btn" style="background:#8e44ad;" onclick="addBankTransaction()">লেনদেন সম্পন্ন করুন</button>
+        <button class="btn" style="background:#8e44ad;" onclick="checkAdminPin(addBankTransaction)">লেনদেন সম্পন্ন করুন</button>
         <table>
-            <thead>
-                <tr>
-                    <th>তারিখ</th>
-                    <th>লেনদেনের ধরন</th>
-                    <th>বিবরণ/স্লিপ</th>
-                    <th>পরিমাণ</th>
-                    <th>অ্যাকশন</th>
-                </tr>
-            </thead>
+            <thead><tr><th>তারিখ</th><th>ধরন</th><th>বিবরণ</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
             <tbody id="bankTable"></tbody>
         </table>
     </div>
 
-    <!-- Tab 8: Annual Income Page -->
+    <!-- Tab 8: Annual Income Module -->
     <div id="tab-annual-income" class="tab-content">
         <div class="tab-header-actions">
             <h3>সমিতির বার্ষিক আয়ের হিসাব</h3>
-            <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
         </div>
         <div class="form-row">
             <input type="text" id="incYear" placeholder="বছর (যেমন: ২০২৬)">
-            <input type="text" id="incSource" placeholder="আয়ের উৎস (যেমন: ব্যাংকের সুদ, বিলম্ব ফি)">
+            <input type="text" id="incSource" placeholder="আয়ের উৎস">
             <input type="text" id="incAmount" placeholder="টাকার পরিমাণ" oninput="updateWords(this, 'incWords')">
         </div>
         <div class="in-words" id="incWords"></div>
-        <button class="btn" style="background:#16a085;" onclick="addAnnualIncome()">আয়ের হিসাব জমা করুন</button>
-        
-        <table style="margin-top: 20px;">
-            <thead>
-                <tr>
-                    <th>বছর</th>
-                    <th>আয়ের উৎস/বিবরণ</th>
-                    <th>পরিমাণ</th>
-                    <th>অ্যাকশন</th>
-                </tr>
-            </thead>
+        <button class="btn" style="background:#16a085;" onclick="checkAdminPin(addAnnualIncome)">আয়ের হিসাব জমা করুন</button>
+        <table>
+            <thead><tr><th>বছর</th><th>আয়ের উৎস</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
             <tbody id="annualIncomeTable"></tbody>
         </table>
     </div>
 </div>
 
-<!-- Edit Member Modal -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeEditModal()">&times;</span>
-        <h3>সদস্যের তথ্য সম্পাদনা করুন</h3>
-        <p style="color: #e74c3c; margin-bottom: 10px; font-size: 12px;">* তথ্য পরিবর্তনের পর সেভ করার জন্য এডমিন ইমেইল প্রয়োজন।</p>
-        <input type="hidden" id="editIndex">
-        <div class="form-row">
-            <input type="text" id="editName" placeholder="সদস্যের নাম">
-            <input type="text" id="editFather" placeholder="পিতার নাম">
-        </div>
-        <div class="form-row">
-            <input type="text" id="editMother" placeholder="মাতার নাম">
-            <input type="text" id="editMobile" placeholder="মোবাইল নম্বর">
-        </div>
-        <div class="form-row">
-            <input type="text" id="editRole" placeholder="পদবী">
-            <input type="text" id="editAddress" placeholder="ঠিকানা">
-        </div>
-        <div class="form-row">
-            <input type="text" id="editNid" placeholder="NID নম্বর">
-            <input type="text" id="editNominee" placeholder="নমিনী">
-        </div>
-        <div class="form-row">
-            <input type="text" id="editRelation" placeholder="সম্পর্ক">
-            <input type="text" id="editSavings" placeholder="মোট সঞ্চয়">
-        </div>
-        <div class="form-row">
-            <input type="text" id="editLoan" placeholder="মোট ঋণ">
-            <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
-                <label style="font-size:12px; color:#555;">নতুন ছবি (ঐচ্ছিক):</label>
-                <input type="file" id="editPhoto" accept="image/*">
-            </div>
-            <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
-                <label style="font-size:12px; color:#555;">নতুন NID ছবি (ঐচ্ছিক):</label>
-                <input type="file" id="editNidPhoto" accept="image/*">
-            </div>
-        </div>
-        <button class="btn btn-warning" style="width:100%; margin-top:10px;" onclick="saveEditedMember()">পরিবর্তন সেভ করুন</button>
+<!-- Digital Receipt Printable Modal -->
+<div id="receiptModal" class="modal">
+    <div class="modal-content" style="text-align: center; border: 2px solid #27ae60;">
+        <span class="close-btn" onclick="closeReceipt()">&times;</span>
+        <h2 style="color: #27ae60;">একতা গ্রুপ সমিতি</h2>
+        <p style="font-size: 12px; color: #666;">টাকা প্রাপ্তির ডিজিটাল রসিদ</p>
+        <hr style="margin: 10px 0;">
+        <div id="receiptDetails" style="text-align: left; font-size: 14px; line-height: 1.8;"></div>
+        <button class="btn btn-print" style="margin-top: 15px; width: 100%;" onclick="window.print()">🖨️ রসিদ প্রিন্ট করুন</button>
     </div>
 </div>
 
@@ -379,7 +321,6 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBedSHd_vT2J8QBbOID3I08h3x2TWJDUo4",
@@ -388,15 +329,13 @@
       projectId: "ekta-group-f31e6",
       storageBucket: "ekta-group-f31e6.firebasestorage.app",
       messagingSenderId: "586386812707",
-      appId: "1:586386812707:web:1de15baefe8b8945a9a696",
-      measurementId: "G-DQT7YF9Y0M"
+      appId: "1:586386812707:web:1de15baefe8b8945a9a696"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const auth = getAuth(app);
 
-    window.adminEmail = "uhasan53@gmail.com"; 
+    window.adminPin = "1234"; // ডিফল্ট এডমিন পিন
 
     window.members = [];
     window.mortgages = [];
@@ -413,32 +352,13 @@
             window.expenses = data.expenses || [];
             window.bankTxns = data.bankTxns || [];
             window.annualIncomes = data.annualIncomes || [];
-        } else {
-            window.members = []; window.mortgages = []; window.expenses = []; window.bankTxns = []; window.annualIncomes = [];
         }
-        document.getElementById('syncStatus').innerText = "🟢 লাইভ সিঙ্ক চালু রয়েছে";
+        document.getElementById('syncStatus').innerText = "🟢 ক্লাউড সিঙ্ক চালু";
         renderUI();
     });
 
-    window.saveData = async function() {
-        if (!auth.currentUser) {
-            let emailInput = prompt("এডমিন ইমেইল দিন:", window.adminEmail);
-            let passInput = prompt("এডমিন পাসওয়ার্ড দিন:");
-            
-            if (!emailInput || !passInput) {
-                alert("লগইন না করলে পরিবর্তন সেভ হবে না।");
-                return;
-            }
-
-            try {
-                await signInWithEmailAndPassword(auth, emailInput, passInput);
-            } catch (err) {
-                alert("লগইন ব্যর্থ হয়েছে! সঠিক ইমেইল ও পাসওয়ার্ড দিন।");
-                return;
-            }
-        }
-
-        document.getElementById('syncStatus').innerText = "🔄 ক্লাউডে সেভ হচ্ছে...";
+    window.saveData = function() {
+        document.getElementById('syncStatus').innerText = "🔄 সেভ হচ্ছে...";
         set(ref(db, 'samity_data'), {
             members: window.members,
             mortgages: window.mortgages,
@@ -446,23 +366,20 @@
             bankTxns: window.bankTxns,
             annualIncomes: window.annualIncomes
         }).then(() => {
-            document.getElementById('syncStatus').innerText = "🟢 লাইভ সিঙ্ক চালু রয়েছে";
-        }).catch((err) => {
-            alert('ডাটা সেভ করতে সমস্যা হয়েছে: ' + err.message);
+            document.getElementById('syncStatus').innerText = "🟢 ক্লাউড সিঙ্ক চালু";
         });
     }
 </script>
 
 <script>
+    let myChart = null;
     const bnNums = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
     const enNums = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
     function parseBanglaNum(str) {
         if (!str) return 0;
         let s = str.toString();
-        for (let i = 0; i < 10; i++) {
-            s = s.replace(new RegExp(bnNums[i], 'g'), enNums[i]);
-        }
+        for (let i = 0; i < 10; i++) s = s.replace(new RegExp(bnNums[i], 'g'), enNums[i]);
         return parseFloat(s) || 0;
     }
 
@@ -470,147 +387,58 @@
         if (num === null || num === undefined) return '০';
         let isNegative = num < 0;
         let s = Math.abs(num).toString();
-        for (let i = 0; i < 10; i++) {
-            s = s.replace(new RegExp(enNums[i], 'g'), bnNums[i]);
-        }
+        for (let i = 0; i < 10; i++) s = s.replace(new RegExp(enNums[i], 'g'), bnNums[i]);
         return isNegative ? '-' + s : s;
     }
 
-    const onesB = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ', 'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'উনত্রিশ', 'ত্রিশ', 'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'উনচল্লিশ', 'চল্লিশ', 'একচল্লিশ', 'বায়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আটচল্লিশ', 'উনপঞ্চাশ', 'পঞ্চাশ', 'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'উনষাট', 'ষাট', 'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'উনসত্তর', 'সত্তর', 'একাত্টর', 'বাহাত্তর', 'তিয়াত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'উনআশি', 'আশি', 'একাশি', 'বিরাশি', 'তিরাশি', 'চৌরাশি', 'পঁচাশী', 'ছিয়াশি', 'সাতাশি', 'আটাশি', 'উননব্বই', 'নব্বই', 'একানব্বই', 'বিয়ানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
-
-    function numberToBanglaWords(n) {
-        n = Math.floor(n);
-        if (n === 0) return 'শূন্য';
-        let words = '';
-
-        if (Math.floor(n / 10000000) > 0) {
-            words += numberToBanglaWords(Math.floor(n / 10000000)) + ' কোটি ';
-            n %= 10000000;
+    function checkAdminPin(callback) {
+        let pin = prompt("অপারেশন সম্পন্ন করতে ৪ ডিজিটের এডমিন পিন দিন:");
+        if (pin === window.adminPin) {
+            callback();
+        } else {
+            alert("ভুল পিন দেওয়া হয়েছে!");
         }
-        if (Math.floor(n / 100000) > 0) {
-            words += onesB[Math.floor(n / 100000)] + ' লাখ ';
-            n %= 100000;
-        }
-        if (Math.floor(n / 1000) > 0) {
-            words += onesB[Math.floor(n / 1000)] + ' হাজার ';
-            n %= 1000;
-        }
-        if (Math.floor(n / 100) > 0) {
-            words += onesB[Math.floor(n / 100)] + ' শত ';
-            n %= 100;
-        }
-        if (n > 0) {
-            words += onesB[n] + ' ';
-        }
-        return words.trim();
     }
 
-    function updateWords(inputElem, wordElemId) {
-        let val = parseBanglaNum(inputElem.value);
-        let wordTarget = document.getElementById(wordElemId);
-        if (val > 0) {
-            wordTarget.innerText = 'কথায়: ' + numberToBanglaWords(val) + ' টাকা মাত্র';
-        } else {
-            wordTarget.innerText = '';
-        }
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
     }
 
     function renderUI() {
+        let searchQuery = (document.getElementById('searchBox')?.value || '').toLowerCase();
         let memberTableHtml = '';
-        let totalSavings = 0;
-        let totalLoans = 0;
+        let totalSavings = 0, totalLoans = 0;
 
         (window.members || []).forEach((m, index) => {
             totalSavings += m.savings || 0;
             totalLoans += m.loan || 0;
-            
-            memberTableHtml += `
-                <tr>
-                    <td>${toBanglaNum(index + 1)}</td>
-                    <td><img src="${m.photo || 'https://via.placeholder.com/40'}" class="thumb" alt="ছবি"></td>
-                    <td><b>${m.name}</b><br><span class="badge">${m.role || 'সদস্য'}</span></td>
-                    <td>পিতা: ${m.father || 'প্রযোজ্য নয়'}<br>মাতা: ${m.mother || 'প্রযোজ্য নয়'}</td>
-                    <td>${toBanglaNum(m.mobile || '')}</td>
-                    <td>${m.address || ''}</td>
-                    <td>NID: ${toBanglaNum(m.nid || '')}<br><a href="${m.nidPhoto || '#'}" target="_blank" style="font-size:11px;">${m.nidPhoto ? 'NID ছবি দেখুন' : ''}</a></td>
-                    <td>নমিনী: ${m.nominee || ''}<br>সম্পর্ক: ${m.relation || ''}</td>
-                    <td>সঞ্চয়: <b>${toBanglaNum(m.savings || 0)}</b> টাকা<br>ঋণ: <span style="color:red;"><b>${toBanglaNum(m.loan || 0)}</b> টাকা</span></td>
-                    <td>
-                        <button class="btn btn-warning" style="padding: 4px 8px; font-size:11px; margin-bottom: 3px;" onclick="openEditModal(${index})">সম্পাদনা</button>
-                        <button class="btn btn-danger" style="padding: 4px 8px; font-size:11px;" onclick="deleteMember(${index})">মুছে ফেলুন</button>
-                    </td>
-                </tr>
-            `;
+
+            if (m.name.toLowerCase().includes(searchQuery) || (m.mobile && m.mobile.includes(searchQuery)) || (m.nid && m.nid.includes(searchQuery))) {
+                memberTableHtml += `
+                    <tr>
+                        <td>${toBanglaNum(index + 1)}</td>
+                        <td><img src="${m.photo || 'https://via.placeholder.com/40'}" class="thumb"></td>
+                        <td><b>${m.name}</b><br><span class="badge">${m.role || 'সদস্য'}</span></td>
+                        <td>পিতা: ${m.father || 'N/A'}<br>মাতা: ${m.mother || 'N/A'}</td>
+                        <td>${toBanglaNum(m.mobile || '')}</td>
+                        <td>${m.address || ''}</td>
+                        <td>NID: ${toBanglaNum(m.nid || '')}</td>
+                        <td>নমিনী: ${m.nominee || ''}<br>সম্পর্ক: ${m.relation || ''}</td>
+                        <td>সঞ্চয়: <b>${toBanglaNum(m.savings || 0)}</b><br>ঋণ: <span style="color:red;"><b>${toBanglaNum(m.loan || 0)}</b></span></td>
+                        <td>
+                            <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button>
+                        </td>
+                    </tr>
+                `;
+            }
         });
         document.getElementById('memberTable').innerHTML = memberTableHtml;
 
-        let mortgageTableHtml = '';
-        let totalMortgages = 0;
-        (window.mortgages || []).forEach(m => {
-            totalMortgages += m.amount;
-            mortgageTableHtml += `
-                <tr>
-                    <td>${m.date || 'তারিখ নেই'}</td>
-                    <td>${m.name}</td>
-                    <td>${toBanglaNum(m.phone)}</td>
-                    <td>${m.land}</td>
-                    <td><b>${toBanglaNum(m.amount)}</b> টাকা</td>
-                </tr>
-            `;
-        });
-        document.getElementById('mortgageTable').innerHTML = mortgageTableHtml;
+        let totalMortgages = (window.mortgages || []).reduce((sum, m) => sum + m.amount, 0);
+        let totalExpenses = (window.expenses || []).reduce((sum, e) => sum + e.amount, 0);
+        let totalAnnualIncome = (window.annualIncomes || []).reduce((sum, ai) => sum + ai.amount, 0);
+        let abBankBalance = (window.bankTxns || []).reduce((sum, b) => b.type === 'deposit' ? sum + b.amount : sum - b.amount, 0);
 
-        let expenseTableHtml = '';
-        let totalExpenses = 0;
-        (window.expenses || []).forEach((e, idx) => {
-            totalExpenses += e.amount;
-            expenseTableHtml += `
-                <tr>
-                    <td>${e.date || 'তারিখ নেই'}</td>
-                    <td>${e.title}</td>
-                    <td><b>${toBanglaNum(e.amount)}</b> টাকা</td>
-                    <td><button class="btn btn-danger" style="padding: 2px 6px; font-size:11px;" onclick="deleteExpense(${idx})">মুছুন</button></td>
-                </tr>
-            `;
-        });
-        document.getElementById('expenseTable').innerHTML = expenseTableHtml;
-
-        let bankTableHtml = '';
-        let abBankBalance = 0;
-        (window.bankTxns || []).forEach((b, idx) => {
-            if (b.type === 'deposit') {
-                abBankBalance += b.amount;
-            } else {
-                abBankBalance -= b.amount;
-            }
-            bankTableHtml += `
-                <tr>
-                    <td>${b.date || ''}</td>
-                    <td>${b.type === 'deposit' ? '<span style="color:green;font-weight:bold;">জমা</span>' : '<span style="color:red;font-weight:bold;">উত্তোলন</span>'}</td>
-                    <td>${b.ref}</td>
-                    <td><b>${toBanglaNum(b.amount)}</b> টাকা</td>
-                    <td><button class="btn btn-danger" style="padding: 2px 6px; font-size:11px;" onclick="deleteBankTxn(${idx})">মুছুন</button></td>
-                </tr>
-            `;
-        });
-        document.getElementById('bankTable').innerHTML = bankTableHtml;
-
-        let annualIncomeTableHtml = '';
-        let totalAnnualIncome = 0;
-        (window.annualIncomes || []).forEach((ai, idx) => {
-            totalAnnualIncome += ai.amount;
-            annualIncomeTableHtml += `
-                <tr>
-                    <td>${toBanglaNum(ai.year)}</td>
-                    <td>${ai.source}</td>
-                    <td><b>${toBanglaNum(ai.amount)}</b> টাকা</td>
-                    <td><button class="btn btn-danger" style="padding: 2px 6px; font-size:11px;" onclick="deleteAnnualIncome(${idx})">মুছুন</button></td>
-                </tr>
-            `;
-        });
-        document.getElementById('annualIncomeTable').innerHTML = annualIncomeTableHtml;
-
-        // অবশিষ্ট নিট স্থিতি / ক্যাশ গণনাসূত্র
         let netBalance = (totalSavings + totalAnnualIncome) - (totalLoans + totalMortgages + totalExpenses);
 
         document.getElementById('totalSavings').innerText = toBanglaNum(totalSavings) + ' টাকা';
@@ -621,14 +449,28 @@
         document.getElementById('totalAnnualIncome').innerText = toBanglaNum(totalAnnualIncome) + ' টাকা';
         document.getElementById('netBalance').innerText = toBanglaNum(netBalance) + ' টাকা';
 
-        let memberOptions = '';
-        (window.members || []).forEach((m, index) => {
-            memberOptions += `<option value="${index}">${m.name} (ID: ${toBanglaNum(index + 1)})</option>`;
-        });
+        let memberOptions = (window.members || []).map((m, idx) => `<option value="${idx}">${m.name}</option>`).join('');
         document.getElementById('depositMemberSelect').innerHTML = memberOptions;
         document.getElementById('loanMemberSelect').innerHTML = memberOptions;
 
-        updateLoanEligibleInfo();
+        updateChart(totalSavings, totalLoans, totalMortgages, totalExpenses, totalAnnualIncome);
+    }
+
+    function updateChart(savings, loans, mortgages, expenses, income) {
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        if (myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['মোট সঞ্চয়', 'সদস্য ঋণ', 'জমি বন্ধক', 'মোট খরচ', 'বার্ষিক আয়'],
+                datasets: [{
+                    label: 'সমিতির অর্থনৈতিক অবস্থা (টাকা)',
+                    data: [savings, loans, mortgages, expenses, income],
+                    backgroundColor: ['#27ae60', '#f39c12', '#e74c3c', '#d35400', '#16a085']
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
     }
 
     function openTab(tabId, btn) {
@@ -638,268 +480,34 @@
         btn.classList.add('active');
     }
 
-    function fileToBase64(file) {
-        return new Promise((resolve) => {
-            if (!file) resolve('');
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result);
-            reader.readAsDataURL(file);
-        });
-    }
-
-    async function addNewMember() {
-        if (window.members.length >= 10) {
-            alert('দুঃখিত! এই সমিতিতে সর্বোচ্চ ১০ জন সদস্যের বেশি যুক্ত করা যাবে না।');
-            return;
-        }
-
-        let name = document.getElementById('mFullName').value.trim();
-        let father = document.getElementById('mFather').value.trim();
-        let mother = document.getElementById('mMother').value.trim();
-        let mobile = document.getElementById('mMobile').value.trim();
-        let role = document.getElementById('mRole').value.trim();
-        let address = document.getElementById('mAddress').value.trim();
-        let nid = document.getElementById('mNid').value.trim();
-        let nominee = document.getElementById('mNominee').value.trim();
-        let relation = document.getElementById('mRelation').value.trim();
-        let savings = parseBanglaNum(document.getElementById('mInitialSavings').value);
-        let loan = parseBanglaNum(document.getElementById('mInitialLoan').value);
-
-        if (!name || !mobile) {
-            alert('অনুগ্রহ করে অন্তত সদস্যের নাম ও মোবাইল নম্বর পূরণ করুন।');
-            return;
-        }
-
-        let photoInput = document.getElementById('mPhoto').files[0];
-        let nidPhotoInput = document.getElementById('mNidPhoto').files[0];
-
-        let photoUrl = await fileToBase64(photoInput);
-        let nidUrl = await fileToBase64(nidPhotoInput);
-
-        window.members.push({
-            name, father, mother, mobile, role, address, nid, nominee, relation,
-            savings, loan, photo: photoUrl, nidPhoto: nidUrl
-        });
-
-        ['mFullName', 'mFather', 'mMother', 'mMobile', 'mRole', 'mAddress', 'mNid', 'mNominee', 'mRelation'].forEach(id => {
-            document.getElementById(id).value = '';
-        });
-        document.getElementById('mInitialSavings').value = '০';
-        document.getElementById('mInitialLoan').value = '০';
-        document.getElementById('mPhoto').value = '';
-        document.getElementById('mNidPhoto').value = '';
-
-        window.saveData();
-    }
-
-    function deleteMember(index) {
-        if (confirm("আপনি কি নিশ্চিতভাবে এই সদস্যকে মুছে ফেলতে চান?")) {
-            window.members.splice(index, 1);
-            window.saveData();
-        }
-    }
-
-    function openEditModal(index) {
-        let m = window.members[index];
-        document.getElementById('editIndex').value = index;
-        document.getElementById('editName').value = m.name || '';
-        document.getElementById('editFather').value = m.father || '';
-        document.getElementById('editMother').value = m.mother || '';
-        document.getElementById('editMobile').value = m.mobile || '';
-        document.getElementById('editRole').value = m.role || '';
-        document.getElementById('editAddress').value = m.address || '';
-        document.getElementById('editNid').value = m.nid || '';
-        document.getElementById('editNominee').value = m.nominee || '';
-        document.getElementById('editRelation').value = m.relation || '';
-        document.getElementById('editSavings').value = toBanglaNum(m.savings || 0);
-        document.getElementById('editLoan').value = toBanglaNum(m.loan || 0);
-
-        document.getElementById('editModal').style.display = 'block';
-    }
-
-    function closeEditModal() {
-        document.getElementById('editModal').style.display = 'none';
-    }
-
-    async function saveEditedMember() {
-        let idx = document.getElementById('editIndex').value;
-        let photoInput = document.getElementById('editPhoto').files[0];
-        let nidPhotoInput = document.getElementById('editNidPhoto').files[0];
-
-        if (photoInput) window.members[idx].photo = await fileToBase64(photoInput);
-        if (nidPhotoInput) window.members[idx].nidPhoto = await fileToBase64(nidPhotoInput);
-
-        window.members[idx].name = document.getElementById('editName').value.trim();
-        window.members[idx].father = document.getElementById('editFather').value.trim();
-        window.members[idx].mother = document.getElementById('editMother').value.trim();
-        window.members[idx].mobile = document.getElementById('editMobile').value.trim();
-        window.members[idx].role = document.getElementById('editRole').value.trim();
-        window.members[idx].address = document.getElementById('editAddress').value.trim();
-        window.members[idx].nid = document.getElementById('editNid').value.trim();
-        window.members[idx].nominee = document.getElementById('editNominee').value.trim();
-        window.members[idx].relation = document.getElementById('editRelation').value.trim();
-        window.members[idx].savings = parseBanglaNum(document.getElementById('editSavings').value);
-        window.members[idx].loan = parseBanglaNum(document.getElementById('editLoan').value);
-
-        closeEditModal();
-        window.saveData();
-    }
-
     function addDeposit() {
         let idx = document.getElementById('depositMemberSelect').value;
         let amount = parseBanglaNum(document.getElementById('depositAmount').value);
         if (idx !== '' && amount > 0) {
             window.members[idx].savings = (window.members[idx].savings || 0) + amount;
+            showReceipt("মাসিক সঞ্চয় জমা", window.members[idx].name, amount);
             window.saveData();
         }
     }
 
-    function updateLoanEligibleInfo() {
-        let idx = document.getElementById('loanMemberSelect').value;
-        if (idx !== '' && window.members[idx]) {
-            let maxLoan = Math.floor((window.members[idx].savings || 0) * 0.80);
-            document.getElementById('loanEligibleText').value = 'সর্বোচ্চ ঋণ: ' + toBanglaNum(maxLoan) + ' টাকা';
-        }
+    function showReceipt(type, name, amount) {
+        document.getElementById('receiptDetails').innerHTML = `
+            <b>তারিখ:</b> ${new Date().toLocaleDateString('bn-BD')}<br>
+            <b>সদস্যের নাম:</b> ${name}<br>
+            <b>লেনদেনের ধরন:</b> ${type}<br>
+            <b>পরিমাণ:</b> ${toBanglaNum(amount)} টাকা<br>
+            <b>অবস্থা:</b> সফল (অনলাইন সিঙ্কড)
+        `;
+        document.getElementById('receiptModal').style.display = 'block';
     }
 
-    function issueLoan() {
-        let idx = document.getElementById('loanMemberSelect').value;
-        let amount = parseBanglaNum(document.getElementById('loanAmount').value);
-        if (idx !== '' && amount > 0) {
-            let maxLoan = Math.floor((window.members[idx].savings || 0) * 0.80);
-            if (amount > maxLoan) {
-                alert('ঋণের পরিমাণ সর্বোচ্চ প্রাপ্য ঋণ (' + toBanglaNum(maxLoan) + ' টাকা) এর চেয়ে বেশি হতে পারবে না!');
-                return;
-            }
-            window.members[idx].loan = (window.members[idx].loan || 0) + amount;
-            document.getElementById('loanAmount').value = '';
-            document.getElementById('loanWords').innerText = '';
-            window.saveData();
-        }
+    function closeReceipt() {
+        document.getElementById('receiptModal').style.display = 'none';
     }
 
-    function addMortgage() {
-        let name = document.getElementById('mgName').value.trim();
-        let phone = document.getElementById('mgPhone').value.trim();
-        let land = document.getElementById('mgLand').value.trim();
-        let amount = parseBanglaNum(document.getElementById('mgAmount').value);
-        let date = document.getElementById('mgDate').value;
-
-        if (name && amount > 0) {
-            window.mortgages.push({ name, phone, land, amount, date });
-            document.getElementById('mgName').value = '';
-            document.getElementById('mgPhone').value = '';
-            document.getElementById('mgLand').value = '';
-            document.getElementById('mgAmount').value = '';
-            document.getElementById('mgWords').innerText = '';
-            window.saveData();
-        }
-    }
-
-    function addExpense() {
-        let title = document.getElementById('expTitle').value.trim();
-        let amount = parseBanglaNum(document.getElementById('expAmount').value);
-        let date = document.getElementById('expDate').value;
-
-        if (title && amount > 0) {
-            window.expenses.push({ title, amount, date });
-            document.getElementById('expTitle').value = '';
-            document.getElementById('expAmount').value = '';
-            document.getElementById('expWords').innerText = '';
-            window.saveData();
-        }
-    }
-
-    function deleteExpense(index) {
-        window.expenses.splice(index, 1);
+    function deleteMember(idx) {
+        window.members.splice(idx, 1);
         window.saveData();
-    }
-
-    function addBankTransaction() {
-        let type = document.getElementById('bankType').value;
-        let ref = document.getElementById('bankRef').value.trim();
-        let amount = parseBanglaNum(document.getElementById('bankAmount').value);
-        let date = document.getElementById('bankDate').value;
-
-        if (amount > 0) {
-            window.bankTxns.push({ type, ref, amount, date });
-            document.getElementById('bankRef').value = '';
-            document.getElementById('bankAmount').value = '';
-            document.getElementById('bankWords').innerText = '';
-            window.saveData();
-        }
-    }
-
-    function deleteBankTxn(index) {
-        window.bankTxns.splice(index, 1);
-        window.saveData();
-    }
-
-    function addAnnualIncome() {
-        let year = document.getElementById('incYear').value.trim();
-        let source = document.getElementById('incSource').value.trim();
-        let amount = parseBanglaNum(document.getElementById('incAmount').value);
-
-        if (source && amount > 0) {
-            window.annualIncomes.push({ year, source, amount });
-            document.getElementById('incYear').value = '';
-            document.getElementById('incSource').value = '';
-            document.getElementById('incAmount').value = '';
-            document.getElementById('incWords').innerText = '';
-            window.saveData();
-        }
-    }
-
-    function deleteAnnualIncome(index) {
-        window.annualIncomes.splice(index, 1);
-        window.saveData();
-    }
-
-    function downloadBackup() {
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
-            members: window.members,
-            mortgages: window.mortgages,
-            expenses: window.expenses,
-            bankTxns: window.bankTxns,
-            annualIncomes: window.annualIncomes
-        }));
-        let downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", "ekta_group_backup.json");
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
-
-    function restoreData(event) {
-        let file = event.target.files[0];
-        if (!file) return;
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                let data = JSON.parse(e.target.result);
-                window.members = data.members || [];
-                window.mortgages = data.mortgages || [];
-                window.expenses = data.expenses || [];
-                window.bankTxns = data.bankTxns || [];
-                window.annualIncomes = data.annualIncomes || [];
-                window.saveData();
-            } catch (err) {
-                alert("ব্যাকআপ ফাইলের ফরম্যাট ভুল!");
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    function resetData() {
-        if (confirm("সতর্কতা! সকল ডাটা মুছে যাবে। আপনি কি নিশ্চিত?")) {
-            window.members = [];
-            window.mortgages = [];
-            window.expenses = [];
-            window.bankTxns = [];
-            window.annualIncomes = [];
-            window.saveData();
-        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
