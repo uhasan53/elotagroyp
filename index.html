@@ -28,7 +28,7 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; }
         body { background-color: var(--bg-color); color: var(--text-color); display: flex; height: 100vh; overflow: hidden; }
 
-        .app-container { display: flex; width: 100%; height: 100%; }
+        .app-container { display: flex; width: 100%; height: 100%; position: relative; }
         
         .sidebar {
             width: 260px;
@@ -38,7 +38,8 @@
             flex-direction: column;
             padding: 20px 0;
             flex-shrink: 0;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            z-index: 999;
         }
         .sidebar-header { padding: 0 20px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-header h2 { font-size: 20px; color: #fff; }
@@ -64,72 +65,142 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            width: 100%;
         }
 
         .top-nav {
             background: var(--card-bg);
-            padding: 15px 25px;
+            padding: 12px 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
-        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .top-left { display: flex; align-items: center; gap: 10px; }
+        .menu-toggle { display: none; font-size: 22px; background: none; border: none; color: var(--text-color); cursor: pointer; }
+        .header-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 
-        .content-body { padding: 25px; }
+        .content-body { padding: 20px; }
 
         .page-module { display: none; }
         .page-module.active-page { display: block; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-color); }
-        .card h3 { font-size: 13px; color: #7f8c8d; text-transform: uppercase; }
-        .card p { font-size: 22px; font-weight: bold; margin-top: 8px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid var(--primary-color); }
+        .card h3 { font-size: 12px; color: #7f8c8d; text-transform: uppercase; }
+        .card p { font-size: 18px; font-weight: bold; margin-top: 6px; }
 
-        .chart-box { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 350px; margin-bottom: 25px; }
+        .chart-box { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 300px; margin-bottom: 20px; }
 
-        .form-card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 800px; }
-        .form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
-        .form-row input, .form-row select { padding: 10px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); border-radius: 4px; flex: 1; min-width: 220px; font-size: 14px; }
-        .btn { padding: 9px 18px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .form-card { background: var(--card-bg); padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 800px; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+        .form-row input, .form-row select { padding: 9px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); border-radius: 4px; flex: 1; min-width: 100%; font-size: 14px; }
+        
+        @media (min-width: 600px) {
+            .form-row input, .form-row select { min-width: 200px; }
+        }
+
+        .btn { padding: 8px 14px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .btn-print { background: #2980b9; }
         .btn-warning { background: #f39c12; }
         .btn-danger { background: #e74c3c; }
 
-        .in-words { font-size: 12px; color: var(--primary-color); font-weight: bold; margin-bottom: 12px; }
-
         table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 13px; }
-        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: left; }
+        th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; }
         th { background: rgba(0,0,0,0.03); color: var(--text-color); }
-        .badge { background: #3498db; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; }
-        .thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; }
+        .badge { background: #3498db; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
+        .thumb { width: 35px; height: 35px; object-fit: cover; border-radius: 50%; }
+        .status-badge { font-size: 11px; background: #27ae60; padding: 3px 6px; border-radius: 4px; color: white; }
 
-        .status-badge { font-size: 12px; background: #27ae60; padding: 4px 8px; border-radius: 4px; color: white; }
+        /* Mobile Overlay Background */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 998; }
+
+        /* Responsive Styles (Mobile Friendly) */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                top: 0;
+                bottom: 0;
+            }
+            .sidebar.active { left: 0; }
+            .overlay.active { display: block; }
+            .menu-toggle { display: block; }
+            .content-body { padding: 12px; }
+            .header-actions button, .header-actions span { font-size: 11px; padding: 6px 8px; }
+            #currentPageTitle { font-size: 15px; }
+
+            /* Table Responsive Transformation */
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; background: var(--card-bg); padding: 8px; }
+            td { border: none; position: relative; padding-left: 45%; text-align: right; font-size: 12px; }
+            td:before { position: absolute; left: 10px; width: 40%; text-align: left; font-weight: bold; color: var(--primary-color); }
+
+            /* Dynamic Table Headers for Mobile */
+            #memberTable td:nth-of-type(1):before { content: "ক্রম:"; }
+            #memberTable td:nth-of-type(2):before { content: "ছবি:"; }
+            #memberTable td:nth-of-type(3):before { content: "নাম ও পদবী:"; }
+            #memberTable td:nth-of-type(4):before { content: "অভিভাবক:"; }
+            #memberTable td:nth-of-type(5):before { content: "মোবাইল:"; }
+            #memberTable td:nth-of-type(6):before { content: "NID:"; }
+            #memberTable td:nth-of-type(7):before { content: "নমিনী:"; }
+            #memberTable td:nth-of-type(8):before { content: "সঞ্চয় ও ঋণ:"; }
+            #memberTable td:nth-of-type(9):before { content: "অ্যাকশন:"; }
+
+            #mortgageTable td:nth-of-type(1):before { content: "তারিখ:"; }
+            #mortgageTable td:nth-of-type(2):before { content: "নাম:"; }
+            #mortgageTable td:nth-of-type(3):before { content: "ফোন:"; }
+            #mortgageTable td:nth-of-type(4):before { content: "জমির বিবরণ:"; }
+            #mortgageTable td:nth-of-type(5):before { content: "পরিমাণ:"; }
+            #mortgageTable td:nth-of-type(6):before { content: "অ্যাকশন:"; }
+
+            #expenseTable td:nth-of-type(1):before { content: "তারিখ:"; }
+            #expenseTable td:nth-of-type(2):before { content: "খাত:"; }
+            #expenseTable td:nth-of-type(3):before { content: "পরিমাণ:"; }
+            #expenseTable td:nth-of-type(4):before { content: "অ্যাকশন:"; }
+
+            #bankTable td:nth-of-type(1):before { content: "তারিখ:"; }
+            #bankTable td:nth-of-type(2):before { content: "ধরন:"; }
+            #bankTable td:nth-of-type(3):before { content: "বিবরণ:"; }
+            #bankTable td:nth-of-type(4):before { content: "পরিমাণ:"; }
+            #bankTable td:nth-of-type(5):before { content: "অ্যাকশন:"; }
+
+            #annualIncomeTable td:nth-of-type(1):before { content: "বছর:"; }
+            #annualIncomeTable td:nth-of-type(2):before { content: "উৎস:"; }
+            #annualIncomeTable td:nth-of-type(3):before { content: "পরিমাণ:"; }
+            #annualIncomeTable td:nth-of-type(4):before { content: "অ্যাকশন:"; }
+        }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; }
+        .modal-content { background-color: var(--card-bg); margin: 10% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 450px; position: relative; }
         .close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #aaa; }
 
         @media print {
-            .sidebar, .top-nav, .btn, .form-row, .header-actions, #searchBox { display: none !important; }
+            .sidebar, .top-nav, .btn, .form-row, .header-actions, #searchBox, .menu-toggle { display: none !important; }
             .main-content { overflow: visible; }
             .content-body { padding: 0; }
             .page-module { display: none !important; }
             .page-module.active-page { display: block !important; }
+            table, tr, td { display: table !important; }
+            td:before { content: "" !important; }
         }
     </style>
 </head>
 <body>
 
+<div class="overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
 <div class="app-container">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2>একতা গ্রুপ</h2>
             <small style="color: #bdc3c7;">সমিতি ম্যানেজমেন্ট</small>
         </div>
         <ul class="sidebar-menu">
             <li class="active" onclick="navigateTo('page-dashboard', this)"><a href="#">📊 ওভারভিউ ড্যাশবোর্ড</a></li>
-            <li onclick="navigateTo('page-members', this)"><a href="#">👥 সদস্য তালিকা ও সারসংক্ষেপ</a></li>
+            <li onclick="navigateTo('page-members', this)"><a href="#">👥 সদস্য তালিকা ও বিবরণ</a></li>
             <li onclick="navigateTo('page-add-member', this)"><a href="#">➕ নতুন সদস্য নিবন্ধন</a></li>
             <li onclick="navigateTo('page-deposit', this)"><a href="#">💰 সঞ্চয় জমা</a></li>
             <li onclick="navigateTo('page-loan', this)"><a href="#">💳 সদস্য ঋণ বিতরণ</a></li>
@@ -142,14 +213,17 @@
 
     <div class="main-content">
         <div class="top-nav">
-            <h3 id="currentPageTitle">📊 ওভারভিউ ড্যাশবোর্ড</h3>
+            <div class="top-left">
+                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                <h3 id="currentPageTitle">📊 ড্যাশবোর্ড</h3>
+            </div>
             <div class="header-actions">
-                <span class="status-badge" id="syncStatus">🔄 ক্লাউড সিঙ্ক হচ্ছে...</span>
-                <button class="btn btn-warning" onclick="toggleDarkMode()">🌙 ডার্ক মোড</button>
-                <button class="btn btn-print" onclick="downloadBackup()">📥 ব্যাকআপ</button>
-                <button class="btn btn-warning" onclick="document.getElementById('restoreInput').click()">📤 রিস্টোর</button>
+                <span class="status-badge" id="syncStatus">🔄</span>
+                <button class="btn btn-warning" onclick="toggleDarkMode()">🌙</button>
+                <button class="btn btn-print" onclick="downloadBackup()">📥</button>
+                <button class="btn btn-warning" onclick="document.getElementById('restoreInput').click()">📤</button>
                 <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-                <button class="btn btn-danger" onclick="checkAdminPin(resetData)">🗑️ রিসেট</button>
+                <button class="btn btn-danger" onclick="checkAdminPin(resetData)">🗑️</button>
             </div>
         </div>
 
@@ -194,34 +268,32 @@
 
             <!-- PAGE 2: MEMBERS DIRECTORY -->
             <div id="page-members" class="page-module">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <input type="text" id="searchBox" placeholder="🔍 নাম, ফোন বা NID দিয়ে খুঁজুন..." oninput="renderUI()" style="padding:8px; border-radius:4px; border:1px solid #ccc; width:280px;">
-                    <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+                <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <input type="text" id="searchBox" placeholder="🔍 খুঁজুন..." oninput="renderUI()" style="padding:8px; border-radius:4px; border:1px solid #ccc; flex:1;">
+                    <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট</button>
                 </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ক্রম</th>
-                                <th>ছবি</th>
-                                <th>নাম ও পদবী</th>
-                                <th>অভিভাবক</th>
-                                <th>মোবাইল</th>
-                                <th>NID</th>
-                                <th>নমিনী</th>
-                                <th>সঞ্চয় ও ঋণ</th>
-                                <th>অ্যাকশন</th>
-                            </tr>
-                        </thead>
-                        <tbody id="memberTable"></tbody>
-                    </table>
-                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ক্রম</th>
+                            <th>ছবি</th>
+                            <th>নাম ও পদবী</th>
+                            <th>অভিভাবক</th>
+                            <th>মোবাইল</th>
+                            <th>NID</th>
+                            <th>নমিনী</th>
+                            <th>সঞ্চয় ও ঋণ</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memberTable"></tbody>
+                </table>
             </div>
 
             <!-- PAGE 3: ADD MEMBER -->
             <div id="page-add-member" class="page-module">
                 <div class="form-card">
-                    <h3 style="margin-bottom: 15px;">নতুন সদস্য নিবন্ধন ফরম</h3>
+                    <h3 style="margin-bottom: 12px;">নতুন সদস্য নিবন্ধন</h3>
                     <div class="form-row">
                         <input type="text" id="mFullName" placeholder="সদস্যের নাম">
                         <input type="text" id="mFather" placeholder="পিতার নাম">
@@ -244,42 +316,42 @@
                     </div>
                     <div class="form-row">
                         <input type="text" id="mInitialLoan" placeholder="প্রাথমিক ঋণ" value="০">
-                        <div style="flex:1;"><label style="font-size:12px;">ছবি:</label><input type="file" id="mPhoto" accept="image/*"></div>
+                        <div style="flex:1;"><label style="font-size:11px;">ছবি:</label><input type="file" id="mPhoto" accept="image/*"></div>
                     </div>
-                    <button class="btn" onclick="checkAdminPin(addNewMember)">নিবন্ধন সম্পন্ন করুন</button>
+                    <button class="btn" style="width:100%; margin-top:10px;" onclick="checkAdminPin(addNewMember)">নিবন্ধন সম্পন্ন করুন</button>
                 </div>
             </div>
 
             <!-- PAGE 4: DEPOSIT -->
             <div id="page-deposit" class="page-module">
                 <div class="form-card">
-                    <h3 style="margin-bottom: 15px;">মাসিক সঞ্চয় জমা গ্রহণ</h3>
+                    <h3 style="margin-bottom: 12px;">মাসিক সঞ্চয় জমা</h3>
                     <div class="form-row">
                         <select id="depositMemberSelect"></select>
                         <input type="text" id="depositAmount" value="২৫০০" placeholder="টাকার পরিমাণ">
                         <input type="date" id="depositDate">
                     </div>
-                    <button class="btn" onclick="checkAdminPin(addDeposit)">জমা কনফার্ম করুন</button>
+                    <button class="btn" style="width:100%; margin-top:10px;" onclick="checkAdminPin(addDeposit)">জমা কনফার্ম করুন</button>
                 </div>
             </div>
 
             <!-- PAGE 5: LOAN -->
             <div id="page-loan" class="page-module">
                 <div class="form-card">
-                    <h3 style="margin-bottom: 15px;">সদস্যদের ঋণ প্রদান</h3>
+                    <h3 style="margin-bottom: 12px;">ঋণ প্রদান</h3>
                     <div class="form-row">
                         <select id="loanMemberSelect"></select>
                         <input type="text" id="loanAmount" placeholder="ঋণের পরিমাণ">
                         <input type="date" id="loanDate">
                     </div>
-                    <button class="btn btn-warning" onclick="checkAdminPin(issueLoan)">ঋণ মঞ্জুর করুন</button>
+                    <button class="btn btn-warning" style="width:100%; margin-top:10px;" onclick="checkAdminPin(issueLoan)">ঋণ মঞ্জুর করুন</button>
                 </div>
             </div>
 
             <!-- PAGE 6: MORTGAGE -->
             <div id="page-mortgage" class="page-module">
-                <div class="form-card" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px;">নতুন জমি বন্ধক এন্ট্রি</h3>
+                <div class="form-card" style="margin-bottom: 15px;">
+                    <h3 style="margin-bottom: 12px;">নতুন জমি বন্ধক</h3>
                     <div class="form-row">
                         <input type="text" id="mgName" placeholder="বন্ধকদাতার নাম">
                         <input type="text" id="mgPhone" placeholder="মোবাইল নম্বর">
@@ -287,7 +359,7 @@
                         <input type="text" id="mgAmount" placeholder="টাকার পরিমাণ">
                         <input type="date" id="mgDate">
                     </div>
-                    <button class="btn btn-danger" onclick="checkAdminPin(addMortgage)">বন্ধক সংরক্ষণ করুন</button>
+                    <button class="btn btn-danger" style="width:100%; margin-top:10px;" onclick="checkAdminPin(addMortgage)">সংরক্ষণ করুন</button>
                 </div>
                 <table>
                     <thead><tr><th>তারিখ</th><th>নাম</th><th>ফোন</th><th>জমির বিবরণ</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
@@ -297,14 +369,14 @@
 
             <!-- PAGE 7: EXPENSE -->
             <div id="page-expense" class="page-module">
-                <div class="form-card" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px;">সমিতির খরচের হিসাব</h3>
+                <div class="form-card" style="margin-bottom: 15px;">
+                    <h3 style="margin-bottom: 12px;">সমিতির খরচ</h3>
                     <div class="form-row">
                         <input type="text" id="expTitle" placeholder="খরচের খাত">
                         <input type="text" id="expAmount" placeholder="টাকার পরিমাণ">
                         <input type="date" id="expDate">
                     </div>
-                    <button class="btn btn-warning" onclick="checkAdminPin(addExpense)">খরচ এন্ট্রি করুন</button>
+                    <button class="btn btn-warning" style="width:100%; margin-top:10px;" onclick="checkAdminPin(addExpense)">এন্ট্রি করুন</button>
                 </div>
                 <table>
                     <thead><tr><th>তারিখ</th><th>খাত</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
@@ -314,8 +386,8 @@
 
             <!-- PAGE 8: BANK -->
             <div id="page-bank" class="page-module">
-                <div class="form-card" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px;">AB Bank হিসাব লেনদেন</h3>
+                <div class="form-card" style="margin-bottom: 15px;">
+                    <h3 style="margin-bottom: 12px;">AB Bank লেনদেন</h3>
                     <div class="form-row">
                         <select id="bankType">
                             <option value="deposit">ব্যাংকে জমা (Deposit)</option>
@@ -325,7 +397,7 @@
                         <input type="text" id="bankAmount" placeholder="পরিমাণ">
                         <input type="date" id="bankDate">
                     </div>
-                    <button class="btn" style="background:#8e44ad;" onclick="checkAdminPin(addBankTransaction)">লেনদেন যুক্ত করুন</button>
+                    <button class="btn" style="background:#8e44ad; width:100%; margin-top:10px;" onclick="checkAdminPin(addBankTransaction)">যুক্ত করুন</button>
                 </div>
                 <table>
                     <thead><tr><th>তারিখ</th><th>ধরন</th><th>বিবরণ</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
@@ -335,14 +407,14 @@
 
             <!-- PAGE 9: ANNUAL INCOME -->
             <div id="page-annual-income" class="page-module">
-                <div class="form-card" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px;">বার্ষিক আয়ের হিসাব</h3>
+                <div class="form-card" style="margin-bottom: 15px;">
+                    <h3 style="margin-bottom: 12px;">বার্ষিক আয়ের হিসাব</h3>
                     <div class="form-row">
                         <input type="text" id="incYear" placeholder="বছর (যেমন: ২০২৬)">
                         <input type="text" id="incSource" placeholder="আয়ের উৎস">
                         <input type="text" id="incAmount" placeholder="পরিমাণ">
                     </div>
-                    <button class="btn" style="background:#16a085;" onclick="checkAdminPin(addAnnualIncome)">আয় এন্ট্রি করুন</button>
+                    <button class="btn" style="background:#16a085; width:100%; margin-top:10px;" onclick="checkAdminPin(addAnnualIncome)">এন্ট্রি করুন</button>
                 </div>
                 <table>
                     <thead><tr><th>বছর</th><th>উৎস</th><th>পরিমাণ</th><th>অ্যাকশন</th></tr></thead>
@@ -358,11 +430,11 @@
 <div id="receiptModal" class="modal">
     <div class="modal-content" style="text-align: center; border: 2px solid #27ae60;">
         <span class="close-btn" onclick="closeReceipt()">&times;</span>
-        <h2 style="color: #27ae60;">একতা গ্রুপ সমিতি</h2>
-        <p style="font-size: 12px; color: #666;">টাকা প্রাপ্তির ডিজিটাল রসিদ</p>
-        <hr style="margin: 10px 0;">
-        <div id="receiptDetails" style="text-align: left; font-size: 14px; line-height: 1.8;"></div>
-        <button class="btn btn-print" style="margin-top: 15px; width: 100%;" onclick="window.print()">🖨️ রসিদ প্রিন্ট করুন</button>
+        <h3 style="color: #27ae60;">একতা গ্রুপ সমিতি</h3>
+        <p style="font-size: 11px; color: #666;">ডিজিটাল রসিদ</p>
+        <hr style="margin: 8px 0;">
+        <div id="receiptDetails" style="text-align: left; font-size: 13px; line-height: 1.6;"></div>
+        <button class="btn btn-print" style="margin-top: 12px; width: 100%;" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
     </div>
 </div>
 
@@ -385,16 +457,13 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // অটোমেটিক সাইন ইন করা হচ্ছে যাতে সিকিউরিটি রুলস কাজ করে
     signInAnonymously(auth).then(() => {
-        console.log("Firebase Auth সফলভাবে কানেক্ট হয়েছে");
+        console.log("Firebase Auth কানেক্টেড");
     }).catch((error) => {
         console.error("Auth সমস্যা:", error);
     });
 
-    // Updated Admin Password
     window.adminPin = "R@-423166y";
-
     window.members = [];
     window.mortgages = [];
     window.expenses = [];
@@ -411,12 +480,12 @@
             window.bankTxns = data.bankTxns || [];
             window.annualIncomes = data.annualIncomes || [];
         }
-        document.getElementById('syncStatus').innerText = "🟢 ক্লাউড সিঙ্ক চালু";
+        document.getElementById('syncStatus').innerText = "🟢";
         renderUI();
     });
 
     window.saveData = function() {
-        document.getElementById('syncStatus').innerText = "🔄 সেভ হচ্ছে...";
+        document.getElementById('syncStatus').innerText = "🔄";
         set(ref(db, 'samity_data'), {
             members: window.members,
             mortgages: window.mortgages,
@@ -424,7 +493,7 @@
             bankTxns: window.bankTxns,
             annualIncomes: window.annualIncomes
         }).then(() => {
-            document.getElementById('syncStatus').innerText = "🟢 ক্লাউড সিঙ্ক চালু";
+            document.getElementById('syncStatus').innerText = "🟢";
         }).catch((err) => {
             alert("ডেটা সেভ করতে সমস্যা হয়েছে: " + err.message);
         });
@@ -444,6 +513,11 @@
         return parseFloat(str) || 0;
     }
 
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('mobileOverlay').classList.toggle('active');
+    }
+
     function navigateTo(pageId, element) {
         document.querySelectorAll('.page-module').forEach(p => p.classList.remove('active-page'));
         document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
@@ -451,6 +525,11 @@
         document.getElementById(pageId).classList.add('active-page');
         element.classList.add('active');
         document.getElementById('currentPageTitle').innerText = element.innerText;
+
+        // Close sidebar on mobile select
+        if(window.innerWidth <= 768) {
+            toggleSidebar();
+        }
     }
 
     function toggleDarkMode() {
@@ -458,17 +537,17 @@
     }
 
     function checkAdminPin(callback) {
-        let pin = prompt("অপারেশন সম্পন্ন করতে এডমিন পাসওয়ার্ড দিন:");
+        let pin = prompt("পাসওয়ার্ড দিন:");
         if (pin === "R@-423166y") {
             callback();
         } else if (pin !== null) {
-            alert("ভুল পাসওয়ার্ড দেওয়া হয়েছে!");
+            alert("ভুল পাসওয়ার্ড!");
         }
     }
 
     function addNewMember() {
         let name = document.getElementById('mFullName').value.trim();
-        if (!name) { alert("দয়া করে সদস্যের নাম লিখুন"); return; }
+        if (!name) { alert("নাম লিখুন"); return; }
 
         let photoFile = document.getElementById('mPhoto').files[0];
         let photoUrl = 'https://via.placeholder.com/40';
@@ -490,7 +569,7 @@
             };
             window.members.push(member);
             window.saveData();
-            alert("নতুন সদস্য নিবন্ধিত হয়েছে!");
+            alert("নিবন্ধন সফল!");
             document.querySelectorAll('#page-add-member input[type="text"]').forEach(i => i.value = '');
         };
 
@@ -511,7 +590,7 @@
             showReceipt("মাসিক সঞ্চয় জমা", window.members[idx].name, amount);
             window.saveData();
         } else {
-            alert("সঠিক পরিমাণ উল্লেখ করুন");
+            alert("পরিমাণ উল্লেখ করুন");
         }
     }
 
@@ -524,7 +603,7 @@
             window.saveData();
             document.getElementById('loanAmount').value = '';
         } else {
-            alert("সঠিক পরিমাণ উল্লেখ করুন");
+            alert("পরিমাণ উল্লেখ করুন");
         }
     }
 
@@ -543,7 +622,7 @@
             document.getElementById('mgName').value = '';
             document.getElementById('mgAmount').value = '';
         } else {
-            alert("নাম ও টাকার পরিমাণ সঠিক দিন");
+            alert("সঠিক তথ্য দিন");
         }
     }
 
@@ -560,7 +639,7 @@
             document.getElementById('expTitle').value = '';
             document.getElementById('expAmount').value = '';
         } else {
-            alert("খাত ও সঠিক পরিমাণ দিন");
+            alert("সঠিক তথ্য দিন");
         }
     }
 
@@ -579,7 +658,7 @@
             document.getElementById('bankRef').value = '';
             document.getElementById('bankAmount').value = '';
         } else {
-            alert("সঠিক পরিমাণ উল্লেখ করুন");
+            alert("পরিমাণ উল্লেখ করুন");
         }
     }
 
@@ -597,12 +676,12 @@
             document.getElementById('incSource').value = '';
             document.getElementById('incAmount').value = '';
         } else {
-            alert("উৎস ও সঠিক পরিমাণ দিন");
+            alert("সঠিক তথ্য দিন");
         }
     }
 
     function deleteMember(idx) {
-        if(confirm("আপনি কি নিশ্চিত এই সদস্যকে মুছে ফেলতে চান?")) {
+        if(confirm("সদস্যকে মুছে ফেলতে চান?")) {
             window.members.splice(idx, 1);
             window.saveData();
         }
@@ -655,7 +734,6 @@
         });
         document.getElementById('memberTable').innerHTML = memberTableHtml;
 
-        // Render Mortgage Table
         let mortgageTableHtml = '';
         (window.mortgages || []).forEach((m, idx) => {
             mortgageTableHtml += `<tr>
@@ -665,7 +743,6 @@
         });
         document.getElementById('mortgageTable').innerHTML = mortgageTableHtml;
 
-        // Render Expense Table
         let expenseTableHtml = '';
         (window.expenses || []).forEach((e, idx) => {
             expenseTableHtml += `<tr>
@@ -675,7 +752,6 @@
         });
         document.getElementById('expenseTable').innerHTML = expenseTableHtml;
 
-        // Render Bank Table
         let bankTableHtml = '';
         (window.bankTxns || []).forEach((b, idx) => {
             bankTableHtml += `<tr>
@@ -685,7 +761,6 @@
         });
         document.getElementById('bankTable').innerHTML = bankTableHtml;
 
-        // Render Annual Income Table
         let annualIncomeTableHtml = '';
         (window.annualIncomes || []).forEach((a, idx) => {
             annualIncomeTableHtml += `<tr>
@@ -722,9 +797,9 @@
         myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['মোট সঞ্চয়', 'সদস্য ঋণ', 'জমি বন্ধক', 'মোট খরচ', 'বার্ষিক আয়'],
+                labels: ['সঞ্চয়', 'ঋণ', 'বন্ধক', 'খরচ', 'আয়'],
                 datasets: [{
-                    label: 'অর্থনৈতিক ওভারভিউ (টাকা)',
+                    label: 'অর্থনৈতিক ওভারভিউ',
                     data: [savings, loans, mortgages, expenses, income],
                     backgroundColor: ['#27ae60', '#f39c12', '#e74c3c', '#d35400', '#16a085']
                 }]
@@ -736,10 +811,9 @@
     function showReceipt(type, name, amount) {
         document.getElementById('receiptDetails').innerHTML = `
             <b>তারিখ:</b> ${new Date().toLocaleDateString('bn-BD')}<br>
-            <b>সদস্যের নাম:</b> ${name}<br>
-            <b>লেনদেনের ধরন:</b> ${type}<br>
-            <b>পরিমাণ:</b> ${amount} টাকা<br>
-            <b>স্ট্যাটাস:</b> সফল (অনলাইন সিঙ্কড)
+            <b>সদস্য:</b> ${name}<br>
+            <b>লেনদেন:</b> ${type}<br>
+            <b>পরিমাণ:</b> ${amount} টাকা
         `;
         document.getElementById('receiptModal').style.display = 'block';
     }
@@ -777,7 +851,7 @@
                 window.bankTxns = data.bankTxns || [];
                 window.annualIncomes = data.annualIncomes || [];
                 window.saveData();
-                alert("ব্যাকআপ সফলভাবে রিস্টোর হয়েছে!");
+                alert("ব্যাকআপ রিস্টোর সফল!");
             } catch(err) {
                 alert("ভুল ফাইল ফরম্যাট!");
             }
@@ -786,7 +860,7 @@
     }
 
     function resetData() {
-        if (confirm("আপনি কি নিশ্চিত পুরো ডাটাবেজ খালি করতে চান?")) {
+        if (confirm("ডাটাবেজ খালি করতে চান?")) {
             window.members = [];
             window.mortgages = [];
             window.expenses = [];
