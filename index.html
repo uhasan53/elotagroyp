@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>একতা গ্রুপ - স্মার্ট সমিতি ব্যবস্থাপনা</title>
+    <title>একতা গ্রুপ -/title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -113,17 +113,10 @@
         .thumb { width: 35px; height: 35px; object-fit: cover; border-radius: 50%; }
         .status-badge { font-size: 11px; background: #27ae60; padding: 3px 6px; border-radius: 4px; color: white; }
 
-        /* Mobile Overlay Background */
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 998; }
 
-        /* Responsive Styles (Mobile Friendly) */
         @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -260px;
-                top: 0;
-                bottom: 0;
-            }
+            .sidebar { position: fixed; left: -260px; top: 0; bottom: 0; }
             .sidebar.active { left: 0; }
             .overlay.active { display: block; }
             .menu-toggle { display: block; }
@@ -131,14 +124,12 @@
             .header-actions button, .header-actions span { font-size: 11px; padding: 6px 8px; }
             #currentPageTitle { font-size: 15px; }
 
-            /* Table Responsive Transformation */
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
             tr { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; background: var(--card-bg); padding: 8px; }
             td { border: none; position: relative; padding-left: 45%; text-align: right; font-size: 12px; }
             td:before { position: absolute; left: 10px; width: 40%; text-align: left; font-weight: bold; color: var(--primary-color); }
 
-            /* Dynamic Table Headers for Mobile */
             #memberTable td:nth-of-type(1):before { content: "ক্রম:"; }
             #memberTable td:nth-of-type(2):before { content: "ছবি:"; }
             #memberTable td:nth-of-type(3):before { content: "নাম ও পদবী:"; }
@@ -148,6 +139,11 @@
             #memberTable td:nth-of-type(7):before { content: "নমিনী:"; }
             #memberTable td:nth-of-type(8):before { content: "সঞ্চয় ও ঋণ:"; }
             #memberTable td:nth-of-type(9):before { content: "অ্যাকশন:"; }
+
+            #loanListTable td:nth-of-type(1):before { content: "ক্রম:"; }
+            #loanListTable td:nth-of-type(2):before { content: "নাম:"; }
+            #loanListTable td:nth-of-type(3):before { content: "মোবাইল:"; }
+            #loanListTable td:nth-of-type(4):before { content: "ঋণের পরিমাণ:"; }
 
             #mortgageTable td:nth-of-type(1):before { content: "তারিখ:"; }
             #mortgageTable td:nth-of-type(2):before { content: "নাম:"; }
@@ -174,7 +170,7 @@
         }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background-color: var(--card-bg); margin: 10% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 450px; position: relative; }
+        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; }
         .close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #aaa; }
 
         @media print {
@@ -203,7 +199,8 @@
             <li onclick="navigateTo('page-members', this)"><a href="#">👥 সদস্য তালিকা ও বিবরণ</a></li>
             <li onclick="navigateTo('page-add-member', this)"><a href="#">➕ নতুন সদস্য নিবন্ধন</a></li>
             <li onclick="navigateTo('page-deposit', this)"><a href="#">💰 সঞ্চয় জমা</a></li>
-            <li onclick="navigateTo('page-loan', this)"><a href="#">💳 সদস্য ঋণ বিতরণ</a></li>
+            <li onclick="navigateTo('page-loan', this)"><a href="#">💳 ঋণ বিতরণ</a></li>
+            <li onclick="navigateTo('page-loan-list', this)"><a href="#">📋 ঋণের তালিকা</a></li>
             <li onclick="navigateTo('page-mortgage', this)"><a href="#">🏡 জমি বন্ধক</a></li>
             <li onclick="navigateTo('page-expense', this)"><a href="#">📉 সমিতির খরচ</a></li>
             <li onclick="navigateTo('page-bank', this)"><a href="#">🏦 AB Bank একাউন্ট</a></li>
@@ -348,7 +345,23 @@
                 </div>
             </div>
 
-            <!-- PAGE 6: MORTGAGE -->
+            <!-- PAGE 6: LOAN LIST (নতুন যুক্ত করা হয়েছে) -->
+            <div id="page-loan-list" class="page-module">
+                <h3 style="margin-bottom: 15px;">সকল ঋণের তালিকা</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ক্রম</th>
+                            <th>নাম</th>
+                            <th>মোবাইল</th>
+                            <th>ঋণের পরিমাণ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="loanListTable"></tbody>
+                </table>
+            </div>
+
+            <!-- PAGE 7: MORTGAGE -->
             <div id="page-mortgage" class="page-module">
                 <div class="form-card" style="margin-bottom: 15px;">
                     <h3 style="margin-bottom: 12px;">নতুন জমি বন্ধক</h3>
@@ -367,7 +380,7 @@
                 </table>
             </div>
 
-            <!-- PAGE 7: EXPENSE -->
+            <!-- PAGE 8: EXPENSE -->
             <div id="page-expense" class="page-module">
                 <div class="form-card" style="margin-bottom: 15px;">
                     <h3 style="margin-bottom: 12px;">সমিতির খরচ</h3>
@@ -384,7 +397,7 @@
                 </table>
             </div>
 
-            <!-- PAGE 8: BANK -->
+            <!-- PAGE 9: BANK -->
             <div id="page-bank" class="page-module">
                 <div class="form-card" style="margin-bottom: 15px;">
                     <h3 style="margin-bottom: 12px;">AB Bank লেনদেন</h3>
@@ -405,7 +418,7 @@
                 </table>
             </div>
 
-            <!-- PAGE 9: ANNUAL INCOME -->
+            <!-- PAGE 10: ANNUAL INCOME -->
             <div id="page-annual-income" class="page-module">
                 <div class="form-card" style="margin-bottom: 15px;">
                     <h3 style="margin-bottom: 12px;">বার্ষিক আয়ের হিসাব</h3>
@@ -435,6 +448,28 @@
         <hr style="margin: 8px 0;">
         <div id="receiptDetails" style="text-align: left; font-size: 13px; line-height: 1.6;"></div>
         <button class="btn btn-print" style="margin-top: 12px; width: 100%;" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+    </div>
+</div>
+
+<!-- Edit Member Modal (নতুন যুক্ত করা হয়েছে) -->
+<div id="editMemberModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeEditModal()">&times;</span>
+        <h3 style="margin-bottom: 15px;">সদস্য তথ্য সম্পাদনা (Edit)</h3>
+        <input type="hidden" id="editIndex">
+        <div class="form-row">
+            <input type="text" id="editName" placeholder="নাম">
+            <input type="text" id="editMobile" placeholder="মোবাইল">
+        </div>
+        <div class="form-row">
+            <input type="text" id="editRole" placeholder="পদবী">
+            <input type="text" id="editNid" placeholder="NID">
+        </div>
+        <div class="form-row">
+            <input type="text" id="editSavings" placeholder="সঞ্চয়">
+            <input type="text" id="editLoan" placeholder="ঋণ">
+        </div>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="saveMemberEdit()">আপডেট করুন</button>
     </div>
 </div>
 
@@ -526,7 +561,6 @@
         element.classList.add('active');
         document.getElementById('currentPageTitle').innerText = element.innerText;
 
-        // Close sidebar on mobile select
         if(window.innerWidth <= 768) {
             toggleSidebar();
         }
@@ -579,6 +613,41 @@
             reader.readAsDataURL(photoFile);
         } else {
             processInsert(photoUrl);
+        }
+    }
+
+    /* নতুন যুক্ত করা এডিট ফাংশনসমূহ */
+    function openEditModal(index) {
+        checkAdminPin(() => {
+            let m = window.members[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editName').value = m.name || '';
+            document.getElementById('editMobile').value = m.mobile || '';
+            document.getElementById('editRole').value = m.role || '';
+            document.getElementById('editNid').value = m.nid || '';
+            document.getElementById('editSavings').value = m.savings || 0;
+            document.getElementById('editLoan').value = m.loan || 0;
+            document.getElementById('editMemberModal').style.display = 'block';
+        });
+    }
+
+    function closeEditModal() {
+        document.getElementById('editMemberModal').style.display = 'none';
+    }
+
+    function saveMemberEdit() {
+        let idx = document.getElementById('editIndex').value;
+        if (idx !== '') {
+            window.members[idx].name = document.getElementById('editName').value;
+            window.members[idx].mobile = document.getElementById('editMobile').value;
+            window.members[idx].role = document.getElementById('editRole').value;
+            window.members[idx].nid = document.getElementById('editNid').value;
+            window.members[idx].savings = parseNum(document.getElementById('editSavings').value);
+            window.members[idx].loan = parseNum(document.getElementById('editLoan').value);
+            
+            window.saveData();
+            closeEditModal();
+            alert("তথ্য সফলভাবে আপডেট করা হয়েছে!");
         }
     }
 
@@ -710,7 +779,9 @@
     function renderUI() {
         let searchQuery = (document.getElementById('searchBox')?.value || '').toLowerCase();
         let memberTableHtml = '';
+        let loanListTableHtml = '';
         let totalSavings = 0, totalLoans = 0;
+        let loanCount = 0;
 
         (window.members || []).forEach((m, index) => {
             totalSavings += m.savings || 0;
@@ -727,12 +798,29 @@
                         <td>${m.nid || ''}</td>
                         <td>${m.nominee || ''} (${m.relation || ''})</td>
                         <td>সঞ্চয়: <b>${m.savings || 0}</b><br>ঋণ: <span style="color:red;"><b>${m.loan || 0}</b></span></td>
-                        <td><button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button></td>
+                        <td>
+                            <button class="btn btn-warning" style="padding:2px 6px; font-size:11px;" onclick="openEditModal(${index})">এডিট</button>
+                            <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            /* ঋণ থাকলে ঋণের তালিকায় যুক্ত করা */
+            if ((m.loan || 0) > 0) {
+                loanCount++;
+                loanListTableHtml += `
+                    <tr>
+                        <td>${loanCount}</td>
+                        <td><b>${m.name}</b></td>
+                        <td>${m.mobile || 'N/A'}</td>
+                        <td><b style="color:red;">${m.loan} টাকা</b></td>
                     </tr>
                 `;
             }
         });
         document.getElementById('memberTable').innerHTML = memberTableHtml;
+        document.getElementById('loanListTable').innerHTML = loanListTableHtml || '<tr><td colspan="4" style="text-align:center;">কোনো সক্রিয় ঋণ নেই</td></tr>';
 
         let mortgageTableHtml = '';
         (window.mortgages || []).forEach((m, idx) => {
