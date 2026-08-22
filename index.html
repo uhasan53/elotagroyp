@@ -369,6 +369,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBedSHd_vT2J8QBbOID3I08h3x2TWJDUo4",
@@ -382,6 +383,14 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // অটোমেটিক সাইন ইন করা হচ্ছে যাতে সিকিউরিটি রুলস কাজ করে
+    signInAnonymously(auth).then(() => {
+        console.log("Firebase Auth সফলভাবে কানেক্ট হয়েছে");
+    }).catch((error) => {
+        console.error("Auth সমস্যা:", error);
+    });
 
     // Updated Admin Password
     window.adminPin = "R@-423166y";
