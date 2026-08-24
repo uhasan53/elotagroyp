@@ -7,12 +7,6 @@
     
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJzaG9ydF9uYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40iLAogICJuYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40gLSBzc21hcnQgc2FtaXR5IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly92aWEucGxhY2Vob2xkZXIuY29tLzE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMyYzNlNTAiLAogICJ0aGVtZV9jb2xvciI6ICIjMjdhZTYwIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIgp9">
     <meta name="theme-color" content="#27ae60">
-    
-    <!-- External Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
         :root {
@@ -356,7 +350,7 @@
             <!-- PAGE 3: MEMBERS DIRECTORY -->
             <div id="page-members" class="page-module">
                 <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
-                    <input type="text" id="searchBox" placeholder="🔍 খুঁজুন..." oninput="renderUI()" style="padding:8px; border-radius:4px; border:1px solid #ccc; flex:1;">
+                    <input type="text" id="searchBox" placeholder="🔍 খুঁজুন..." oninput="debouncedRenderUI()" style="padding:8px; border-radius:4px; border:1px solid #ccc; flex:1;">
                     <button class="btn btn-print" onclick="window.print()">🖨️ প্রিন্ট</button>
                 </div>
                 <table>
@@ -536,6 +530,19 @@
     window.bankTxns = [];
     window.annualIncomes = [];
     let myChart = null;
+    let renderTimer = null;
+
+    // Helper: Dynamic Script Loader for Lazy Loading External Libraries
+    function loadScript(src) {
+        return new Promise((resolve, reject) => {
+            if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+        });
+    }
 
     function parseNum(val) {
         if (!val) return 0;
@@ -547,7 +554,6 @@
         return parseFloat(str.replace(/,/g, '')) || 0;
     }
 
-    // সংখ্যাকে বাংলা সংখ্যায় এবং কমা যুক্ত করার ফাংশন
     function formatBnNum(num) {
         if (num === null || num === undefined || isNaN(num)) return '০';
         let nStr = Math.round(num).toString();
@@ -557,7 +563,6 @@
             nStr = nStr.substring(1);
         }
         
-        // বাংলাদেশি ফরম্যাটে কমা (যেমন: ১,৫০,০০০)
         let lastThree = nStr.substring(nStr.length - 3);
         let otherNumbers = nStr.substring(0, nStr.length - 3);
         if (otherNumbers !== '') {
@@ -566,7 +571,6 @@
         let formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
         if (isNeg) formatted = '-' + formatted;
 
-        // ইংরেজি সংখ্যাকে বাংলায় কনভার্ট
         let bnNums = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
         return formatted.replace(/\d/g, d => bnNums[d]);
     }
@@ -759,6 +763,11 @@
     function deleteBankTxn(idx) { window.bankTxns.splice(idx, 1); if(window.saveData) window.saveData(); }
     function deleteAnnualIncome(idx) { window.annualIncomes.splice(idx, 1); if(window.saveData) window.saveData(); }
 
+    function debouncedRenderUI() {
+        clearTimeout(renderTimer);
+        renderTimer = setTimeout(renderUI, 100);
+    }
+
     function renderUI() {
         let searchQuery = (document.getElementById('searchBox')?.value || '').toLowerCase();
         let memberTableHtml = '';
@@ -897,26 +906,39 @@
         updateChart(totalSavings, totalLoans, totalMortgages, totalExpenses, totalAnnualIncome);
     }
 
-    function updateChart(savings, loans, mortgages, expenses, income) {
+    // Dynamic Chart Update
+    async function updateChart(savings, loans, mortgages, expenses, income) {
         const canvas = document.getElementById('financeChart');
         if(!canvas) return;
+        
+        if (typeof Chart === 'undefined') {
+            await loadScript('https://cdn.jsdelivr.net/npm/chart.js');
+        }
+
         const ctx = canvas.getContext('2d');
-        if (myChart) myChart.destroy();
-        myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['সঞ্চয়', 'ঋণ', 'বন্ধক', 'খরচ', 'আয়'],
-                datasets: [{
-                    label: 'অর্থনৈতিক ওভারভিউ',
-                    data: [savings, loans, mortgages, expenses, income],
-                    backgroundColor: ['#27ae60', '#f39c12', '#e74c3c', '#d35400', '#16a085']
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
+        if (myChart) {
+            myChart.data.datasets[0].data = [savings, loans, mortgages, expenses, income];
+            myChart.update();
+        } else {
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['সঞ্চয়', 'ঋণ', 'বন্ধক', 'খরচ', 'আয়'],
+                    datasets: [{
+                        label: 'অর্থনৈতিক ওভারভিউ',
+                        data: [savings, loans, mortgages, expenses, income],
+                        backgroundColor: ['#27ae60', '#f39c12', '#e74c3c', '#d35400', '#16a085']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
     }
 
-    function exportToExcel(type) {
+    async function exportToExcel(type) {
+        if (typeof XLSX === 'undefined') {
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+        }
         let data = [];
         if (type === 'members') {
             data = window.members.map(m => ({
@@ -941,7 +963,11 @@
         XLSX.writeFile(wb, `${type}_report.xlsx`);
     }
 
-    function exportToPDF() {
+    async function exportToPDF() {
+        if (typeof window.jspdf === 'undefined') {
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js');
+        }
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
@@ -1080,7 +1106,7 @@
     const db = getDatabase(app);
     const dbRef = ref(db, 'samity_data');
 
-    // Real-time Database Listener
+    // Optimization: Listen to Firebase Data Updates efficiently
     onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1096,7 +1122,7 @@
             statusEl.innerText = "অনলাইন";
             statusEl.style.background = "#27ae60";
         }
-        if(typeof renderUI === 'function') renderUI();
+        if(typeof debouncedRenderUI === 'function') debouncedRenderUI();
     }, (error) => {
         let statusEl = document.getElementById('syncStatus');
         if(statusEl) {
@@ -1105,7 +1131,6 @@
         }
     });
 
-    // Save Data Function (Handles Online & Offline Storage)
     window.saveData = function() {
         let payload = {
             members: window.members,
@@ -1115,14 +1140,12 @@
             annualIncomes: window.annualIncomes
         };
 
-        // Save to browser memory first
         try {
             localStorage.setItem('samity_cache', JSON.stringify(payload));
         } catch(e) {
             console.error("Local storage error:", e);
         }
         
-        // Sync to cloud
         let statusEl = document.getElementById('syncStatus');
         if (navigator.onLine) {
             if(statusEl) statusEl.innerText = "সেভ হচ্ছে...";
@@ -1138,7 +1161,7 @@
                 }
             });
         }
-        if(typeof renderUI === 'function') renderUI();
+        if(typeof debouncedRenderUI === 'function') debouncedRenderUI();
     }
 </script>
 </body>
