@@ -636,10 +636,10 @@
             img.onload = function() {
                 let canvas = document.createElement('canvas');
                 let ctx = canvas.getContext('2d');
-                canvas.width = 100;
-                canvas.height = 100;
-                ctx.drawImage(img, 0, 0, 100, 100);
-                callback(canvas.toDataURL('image/jpeg', 0.7));
+                canvas.width = 60;
+                canvas.height = 60;
+                ctx.drawImage(img, 0, 0, 60, 60);
+                callback(canvas.toDataURL('image/jpeg', 0.5));
             };
             img.src = e.target.result;
         };
@@ -670,6 +670,7 @@
             if(window.saveData) window.saveData();
             alert("নিবন্ধন সফল!");
             document.querySelectorAll('#page-add-member input[type="text"]').forEach(i => i.value = '');
+            document.getElementById('mPhoto').value = '';
         };
 
         if (photoFile) {
@@ -1212,6 +1213,7 @@
     const db = getDatabase(app);
     const dbRef = ref(db, 'samity_data');
 
+    // Firebase থেকে ডাটা রিসিভ করা
     onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1220,22 +1222,27 @@
             window.expenses = data.expenses || [];
             window.bankTxns = data.bankTxns || [];
             window.annualIncomes = data.annualIncomes || [];
-            localStorage.setItem('samity_cache', JSON.stringify(data));
+            try {
+                localStorage.setItem('samity_cache', JSON.stringify(data));
+            } catch(e) { console.error(e); }
+            
+            let statusEl = document.getElementById('syncStatus');
+            if(statusEl) {
+                statusEl.innerText = "অনলাইন";
+                statusEl.style.background = "#27ae60";
+            }
+            if(typeof debouncedRenderUI === 'function') debouncedRenderUI();
         }
-        let statusEl = document.getElementById('syncStatus');
-        if(statusEl) {
-            statusEl.innerText = "অনলাইন";
-            statusEl.style.background = "#27ae60";
-        }
-        if(typeof debouncedRenderUI === 'function') debouncedRenderUI();
     }, (error) => {
+        console.error("Firebase Read Error:", error);
         let statusEl = document.getElementById('syncStatus');
         if(statusEl) {
-            statusEl.innerText = "অফলাইন মোড (লোকাল সেভ)";
+            statusEl.innerText = "অফলাইন (লোকাল)";
             statusEl.style.background = "#e67e22";
         }
     });
 
+    // ডাটা সেভ করার গ্লোবাল ফাংশন
     window.saveData = function() {
         let payload = {
             members: window.members,
@@ -1245,27 +1252,30 @@
             annualIncomes: window.annualIncomes
         };
 
+        // ১. LocalStorage এ ব্যাকআপ ডাটা সেভ
         try {
             localStorage.setItem('samity_cache', JSON.stringify(payload));
         } catch(e) {
-            console.error("Local storage error:", e);
+            console.error("Local storage storage limit exceeded:", e);
         }
         
         let statusEl = document.getElementById('syncStatus');
-        if (navigator.onLine) {
-            if(statusEl) statusEl.innerText = "সেভ হচ্ছে...";
-            set(dbRef, payload).then(() => {
-                if(statusEl) {
-                    statusEl.innerText = "অনলাইন";
-                    statusEl.style.background = "#27ae60";
-                }
-            }).catch((err) => {
-                if(statusEl) {
-                    statusEl.innerText = "লোকাল সেভড (ক্লাউড ব্লক)";
-                    statusEl.style.background = "#e67e22";
-                }
-            });
-        }
+        if(statusEl) statusEl.innerText = "সেভ হচ্ছে...";
+
+        // ২. Firebase এ ক্লাউড ডাটা সেভ
+        set(dbRef, payload).then(() => {
+            if(statusEl) {
+                statusEl.innerText = "অনলাইন (সেভড)";
+                statusEl.style.background = "#27ae60";
+            }
+        }).catch((err) => {
+            console.error("Firebase Save Error:", err);
+            if(statusEl) {
+                statusEl.innerText = "সেভ হয়নি (Firebase Rules Check)";
+                statusEl.style.background = "#e74c3c";
+            }
+        });
+
         if(typeof debouncedRenderUI === 'function') debouncedRenderUI();
     }
 </script>
