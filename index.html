@@ -155,6 +155,16 @@
             #memberTable td:nth-of-type(9):before { content: "অ্যাকশন:"; }
         }
 
+        /* Print Style for Single Section & Full Page */
+        @media print {
+            body * { visibility: hidden; }
+            .sidebar, .top-nav, .form-card, .btn { display: none !important; }
+            .print-area, .print-area * { visibility: visible; }
+            .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+            table { border: 1px solid #000 !important; width: 100% !important; }
+            th, td { border: 1px solid #000 !important; color: #000 !important; }
+        }
+
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
         .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; }
         .close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #aaa; }
@@ -240,22 +250,26 @@
                 </div>
             </div>
 
-            <!-- PAGE 2: ADVANCED REPORTS (UPDATED DETAILED SCREEN) -->
+            <!-- PAGE 2: ADVANCED REPORTS (WITH FULL & SINGLE PRINT) -->
             <div id="page-reports" class="page-module">
                 <div class="form-card" style="margin-bottom: 20px;">
                     <h3 style="margin-bottom: 8px;">📊 সমিতির পূর্ণাঙ্গ অ্যাডভান্সড রিপোর্ট</h3>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">সকল হিসাবের সার্বিক চিত্র ও বিশদ বিবরণ এক নজরে নিচে দেখে নিন অথবা ফাইল আকারে ডাউনলোড করুন।</p>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">সকল হিসাবের সার্বিক চিত্র নিচে দেওয়া হলো। সরাসরি প্রিন্ট বা এক্সপোর্ট করতে পারেন।</p>
                     
                     <div class="form-row">
+                        <button class="btn btn-print" onclick="printSection('page-reports')">🖨️ সম্পূর্ণ রিপোর্ট প্রিন্ট</button>
                         <button class="btn btn-excel" onclick="exportToExcel('members')">📗 সদস্য তালিকা Excel</button>
                         <button class="btn btn-excel" onclick="exportToExcel('loans')">📗 ঋণের তালিকা Excel</button>
-                        <button class="btn btn-print" onclick="exportToPDF()">📕 ব্যালেন্স শীট (PDF)</button>
+                        <button class="btn btn-print" style="background:#8e44ad;" onclick="exportToPDF()">📕 ব্যালেন্স শীট (PDF)</button>
                     </div>
                 </div>
 
-                <!-- 1. সার্বিক হিসাব সারসংক্ষেপ -->
-                <div class="report-section">
-                    <h4>📌 ১. সার্বিক অর্থনৈতিক সারসংক্ষেপ</h4>
+                <!-- ১. সার্বিক হিসাব সারসংক্ষেপ -->
+                <div class="report-section" id="sec-summary">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4>📌 ১. সার্বিক অর্থনৈতিক সারসংক্ষেপ</h4>
+                        <button class="btn btn-print" style="padding: 4px 8px; font-size: 11px;" onclick="printSection('sec-summary')">🖨️ প্রিন্ট</button>
+                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -278,9 +292,12 @@
                     </table>
                 </div>
 
-                <!-- 2. সদস্য সঞ্চয় ও ঋণ বিস্তারিত -->
-                <div class="report-section">
-                    <h4>👥 ২. সদস্য সঞ্চয় ও ঋণের পূর্ণাঙ্গ রিপোর্ট</h4>
+                <!-- ২. সদস্য সঞ্চয় ও ঋণ বিস্তারিত -->
+                <div class="report-section" id="sec-members">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4>👥 ২. সদস্য সঞ্চয় ও ঋণের পূর্ণাঙ্গ রিপোর্ট</h4>
+                        <button class="btn btn-print" style="padding: 4px 8px; font-size: 11px;" onclick="printSection('sec-members')">🖨️ প্রিন্ট</button>
+                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -296,9 +313,12 @@
                     </table>
                 </div>
 
-                <!-- 3. জমি বন্ধক হিসাব -->
-                <div class="report-section">
-                    <h4>🏡 ৩. জমি বন্ধকের হিসাব</h4>
+                <!-- ৩. জমি বন্ধক হিসাব -->
+                <div class="report-section" id="sec-mortgages">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4>🏡 ৩. জমি বন্ধকের হিসাব</h4>
+                        <button class="btn btn-print" style="padding: 4px 8px; font-size: 11px;" onclick="printSection('sec-mortgages')">🖨️ প্রিন্ট</button>
+                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -313,9 +333,12 @@
                     </table>
                 </div>
 
-                <!-- 4. সমিতির খরচসমূহ -->
-                <div class="report-section">
-                    <h4>📉 ৪. সমিতির খরচ বিবরণী</h4>
+                <!-- ৪. সমিতির খরচসমূহ -->
+                <div class="report-section" id="sec-expenses">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4>📉 ৪. সমিতির খরচ বিবরণী</h4>
+                        <button class="btn btn-print" style="padding: 4px 8px; font-size: 11px;" onclick="printSection('sec-expenses')">🖨️ প্রিন্ট</button>
+                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -328,9 +351,12 @@
                     </table>
                 </div>
 
-                <!-- 5. ব্যাংক লেনদেন বিস্তারিত -->
-                <div class="report-section">
-                    <h4>🏦 ৫. AB Bank লেনদেন বিবরণী</h4>
+                <!-- ৫. ব্যাংক লেনদেন বিস্তারিত -->
+                <div class="report-section" id="sec-bank">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4>🏦 ৫. AB Bank লেনদেন বিবরণী</h4>
+                        <button class="btn btn-print" style="padding: 4px 8px; font-size: 11px;" onclick="printSection('sec-bank')">🖨️ প্রিন্ট</button>
+                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -344,9 +370,12 @@
                     </table>
                 </div>
 
-                <!-- 6. বার্ষিক আয়ের হিসাব -->
-                <div class="report-section">
-                    <h4>📈 ৬. বার্ষিক আয়ের বিবরণী</h4>
+                <!-- ৬. বার্ষিক আয়ের হিসাব -->
+                <div class="report-section" id="sec-annual">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4>📈 ৬. বার্ষিক আয়ের বিবরণী</h4>
+                        <button class="btn btn-print" style="padding: 4px 8px; font-size: 11px;" onclick="printSection('sec-annual')">🖨️ প্রিন্ট</button>
+                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -597,6 +626,16 @@
         } else if (pin !== null) {
             alert("ভুল পাসওয়ার্ড!");
         }
+    }
+
+    /* Print Single Section Handler */
+    function printSection(elementId) {
+        let targetEl = document.getElementById(elementId);
+        if(!targetEl) return;
+        
+        targetEl.classList.add('print-area');
+        window.print();
+        targetEl.classList.remove('print-area');
     }
 
     function loadLocalStorage() {
