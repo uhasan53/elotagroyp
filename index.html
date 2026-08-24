@@ -4,7 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>একতা গ্রুপ - স্মার্ট সমিতি ব্যবস্থাপনা</title>
+    
+    <!-- PWA Web App Manifest -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJzaG9ydF9uYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40iLAogICJuYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40gLSBzc21hcnQgc2FtaXR5IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly92aWEucGxhY2Vob2xkZXIuY29tLzE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMyYzNlNTAiLAogICJ0aGVtZV9jb2xvciI6ICIjMjdhZTYwIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIgp9">
+    <meta name="theme-color" content="#27ae60">
+    
+    <!-- Chart.js, jsPDF & SheetJS (XLSX) CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
         :root {
             --bg-color: #f4f6f9;
@@ -106,6 +116,7 @@
         .btn-warning { background: #f39c12; }
         .btn-danger { background: #e74c3c; }
         .btn-whatsapp { background: #25D366; color: white; }
+        .btn-excel { background: #1f7244; color: white; }
 
         table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 13px; }
         th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; }
@@ -140,49 +151,11 @@
             #memberTable td:nth-of-type(7):before { content: "নমিনী:"; }
             #memberTable td:nth-of-type(8):before { content: "সঞ্চয় ও ঋণ:"; }
             #memberTable td:nth-of-type(9):before { content: "অ্যাকশন:"; }
-
-            #loanListTable td:nth-of-type(1):before { content: "ক্রম:"; }
-            #loanListTable td:nth-of-type(2):before { content: "নাম:"; }
-            #loanListTable td:nth-of-type(3):before { content: "মোবাইল:"; }
-            #loanListTable td:nth-of-type(4):before { content: "ঋণের পরিমাণ:"; }
-
-            #mortgageTable td:nth-of-type(1):before { content: "তারিখ:"; }
-            #mortgageTable td:nth-of-type(2):before { content: "নাম:"; }
-            #mortgageTable td:nth-of-type(3):before { content: "ফোন:"; }
-            #mortgageTable td:nth-of-type(4):before { content: "জমির বিবরণ:"; }
-            #mortgageTable td:nth-of-type(5):before { content: "পরিমাণ:"; }
-            #mortgageTable td:nth-of-type(6):before { content: "অ্যাকশন:"; }
-
-            #expenseTable td:nth-of-type(1):before { content: "তারিখ:"; }
-            #expenseTable td:nth-of-type(2):before { content: "খাত:"; }
-            #expenseTable td:nth-of-type(3):before { content: "পরিমাণ:"; }
-            #expenseTable td:nth-of-type(4):before { content: "অ্যাকশন:"; }
-
-            #bankTable td:nth-of-type(1):before { content: "তারিখ:"; }
-            #bankTable td:nth-of-type(2):before { content: "ধরন:"; }
-            #bankTable td:nth-of-type(3):before { content: "বিবরণ:"; }
-            #bankTable td:nth-of-type(4):before { content: "পরিমাণ:"; }
-            #bankTable td:nth-of-type(5):before { content: "অ্যাকশন:"; }
-
-            #annualIncomeTable td:nth-of-type(1):before { content: "বছর:"; }
-            #annualIncomeTable td:nth-of-type(2):before { content: "উৎস:"; }
-            #annualIncomeTable td:nth-of-type(3):before { content: "পরিমাণ:"; }
-            #annualIncomeTable td:nth-of-type(4):before { content: "অ্যাকশন:"; }
         }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
         .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; }
         .close-btn { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #aaa; }
-
-        @media print {
-            .sidebar, .top-nav, .btn, .form-row, .header-actions, #searchBox, .menu-toggle { display: none !important; }
-            .main-content { overflow: visible; }
-            .content-body { padding: 0; }
-            .page-module { display: none !important; }
-            .page-module.active-page { display: block !important; }
-            table, tr, td { display: table !important; }
-            td:before { content: "" !important; }
-        }
     </style>
 </head>
 <body>
@@ -197,6 +170,7 @@
         </div>
         <ul class="sidebar-menu">
             <li class="active" onclick="navigateTo('page-dashboard', this)"><a href="#">📊 ওভারভিউ ড্যাশবোর্ড</a></li>
+            <li onclick="navigateTo('page-reports', this)"><a href="#">📈 অ্যাডভান্সড রিপোর্টস</a></li>
             <li onclick="navigateTo('page-members', this)"><a href="#">👥 সদস্য তালিকা ও বিবরণ</a></li>
             <li onclick="navigateTo('page-add-member', this)"><a href="#">➕ নতুন সদস্য নিবন্ধন</a></li>
             <li onclick="navigateTo('page-deposit', this)"><a href="#">💰 সঞ্চয় জমা</a></li>
@@ -264,7 +238,21 @@
                 </div>
             </div>
 
-            <!-- PAGE 2: MEMBERS DIRECTORY -->
+            <!-- PAGE 2: ADVANCED REPORTS -->
+            <div id="page-reports" class="page-module">
+                <div class="form-card" style="max-width: 100%; margin-bottom: 20px;">
+                    <h3>📊 রিপোর্টস এবং ফাইল এক্সপোর্ট</h3>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">আপনার হিসাবের বিস্তারিত Excel বা PDF ফরম্যাটে ডাউনলোড করুন।</p>
+                    
+                    <div class="form-row">
+                        <button class="btn btn-excel" onclick="exportToExcel('members')">📗 সদস্য তালিকা Excel (CSV)</button>
+                        <button class="btn btn-excel" onclick="exportToExcel('loans')">📗 ঋণের তালিকা Excel (CSV)</button>
+                        <button class="btn btn-print" onclick="exportToPDF()">📕 সম্পূর্ণ ব্যালেন্স শীট (PDF)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 3: MEMBERS DIRECTORY -->
             <div id="page-members" class="page-module">
                 <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
                     <input type="text" id="searchBox" placeholder="🔍 খুঁজুন..." oninput="renderUI()" style="padding:8px; border-radius:4px; border:1px solid #ccc; flex:1;">
@@ -288,7 +276,7 @@
                 </table>
             </div>
 
-            <!-- PAGE 3: ADD MEMBER -->
+            <!-- PAGE 4: ADD MEMBER -->
             <div id="page-add-member" class="page-module">
                 <div class="form-card">
                     <h3 style="margin-bottom: 12px;">নতুন সদস্য নিবন্ধন</h3>
@@ -320,7 +308,7 @@
                 </div>
             </div>
 
-            <!-- PAGE 4: DEPOSIT -->
+            <!-- PAGE 5: DEPOSIT -->
             <div id="page-deposit" class="page-module">
                 <div class="form-card">
                     <h3 style="margin-bottom: 12px;">মাসিক সঞ্চয় জমা</h3>
@@ -333,7 +321,7 @@
                 </div>
             </div>
 
-            <!-- PAGE 5: LOAN -->
+            <!-- PAGE 6: LOAN -->
             <div id="page-loan" class="page-module">
                 <div class="form-card">
                     <h3 style="margin-bottom: 12px;">ঋণ প্রদান</h3>
@@ -346,7 +334,7 @@
                 </div>
             </div>
 
-            <!-- PAGE 6: LOAN LIST -->
+            <!-- PAGE 7: LOAN LIST -->
             <div id="page-loan-list" class="page-module">
                 <h3 style="margin-bottom: 15px;">সকল ঋণের তালিকা</h3>
                 <table>
@@ -362,7 +350,7 @@
                 </table>
             </div>
 
-            <!-- PAGE 7: MORTGAGE -->
+            <!-- PAGE 8: MORTGAGE -->
             <div id="page-mortgage" class="page-module">
                 <div class="form-card" style="margin-bottom: 15px;">
                     <h3 style="margin-bottom: 12px;">নতুন জমি বন্ধক</h3>
@@ -381,7 +369,7 @@
                 </table>
             </div>
 
-            <!-- PAGE 8: EXPENSE -->
+            <!-- PAGE 9: EXPENSE -->
             <div id="page-expense" class="page-module">
                 <div class="form-card" style="margin-bottom: 15px;">
                     <h3 style="margin-bottom: 12px;">সমিতির খরচ</h3>
@@ -398,7 +386,7 @@
                 </table>
             </div>
 
-            <!-- PAGE 9: BANK -->
+            <!-- PAGE 10: BANK -->
             <div id="page-bank" class="page-module">
                 <div class="form-card" style="margin-bottom: 15px;">
                     <h3 style="margin-bottom: 12px;">AB Bank লেনদেন</h3>
@@ -419,7 +407,7 @@
                 </table>
             </div>
 
-            <!-- PAGE 10: ANNUAL INCOME -->
+            <!-- PAGE 11: ANNUAL INCOME -->
             <div id="page-annual-income" class="page-module">
                 <div class="form-card" style="margin-bottom: 15px;">
                     <h3 style="margin-bottom: 12px;">বার্ষিক আয়ের হিসাব</h3>
@@ -449,31 +437,8 @@
         <hr style="margin: 8px 0;">
         <div id="receiptDetails" style="text-align: left; font-size: 13px; line-height: 1.6;"></div>
         
-        <!-- WhatsApp Receipt Button -->
         <button id="whatsappBtn" class="btn btn-whatsapp" style="margin-top: 12px; width: 100%;">💬 WhatsApp-এ রসিদ পাঠান</button>
         <button class="btn btn-print" style="margin-top: 8px; width: 100%;" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
-    </div>
-</div>
-
-<!-- Edit Member Modal -->
-<div id="editMemberModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeEditModal()">&times;</span>
-        <h3 style="margin-bottom: 15px;">সদস্য তথ্য সম্পাদনা (Edit)</h3>
-        <input type="hidden" id="editIndex">
-        <div class="form-row">
-            <input type="text" id="editName" placeholder="নাম">
-            <input type="text" id="editMobile" placeholder="মোবাইল">
-        </div>
-        <div class="form-row">
-            <input type="text" id="editRole" placeholder="পদবী">
-            <input type="text" id="editNid" placeholder="NID">
-        </div>
-        <div class="form-row">
-            <input type="text" id="editSavings" placeholder="সঞ্চয়">
-            <input type="text" id="editLoan" placeholder="ঋণ">
-        </div>
-        <button class="btn" style="width:100%; margin-top:10px;" onclick="saveMemberEdit()">আপডেট করুন</button>
     </div>
 </div>
 
@@ -498,9 +463,7 @@
 
     signInAnonymously(auth).then(() => {
         console.log("Firebase Auth কানেক্টেড");
-    }).catch((error) => {
-        console.error("Auth সমস্যা:", error);
-    });
+    }).catch((error) => console.error("Auth সমস্যা:", error));
 
     window.adminPin = "R@-423166y";
     window.members = [];
@@ -508,6 +471,21 @@
     window.expenses = [];
     window.bankTxns = [];
     window.annualIncomes = [];
+
+    // LocalStorage Sync for Offline Support
+    function loadOfflineData() {
+        let cached = localStorage.getItem('samity_cache');
+        if(cached) {
+            let data = JSON.parse(cached);
+            window.members = data.members || [];
+            window.mortgages = data.mortgages || [];
+            window.expenses = data.expenses || [];
+            window.bankTxns = data.bankTxns || [];
+            window.annualIncomes = data.annualIncomes || [];
+            renderUI();
+        }
+    }
+    loadOfflineData();
 
     const dbRef = ref(db, 'samity_data');
     onValue(dbRef, (snapshot) => {
@@ -518,24 +496,34 @@
             window.expenses = data.expenses || [];
             window.bankTxns = data.bankTxns || [];
             window.annualIncomes = data.annualIncomes || [];
+            localStorage.setItem('samity_cache', JSON.stringify(data));
         }
         document.getElementById('syncStatus').innerText = "🟢";
         renderUI();
+    }, (error) => {
+        document.getElementById('syncStatus').innerText = "🔴 (Offline)";
     });
 
     window.saveData = function() {
-        document.getElementById('syncStatus').innerText = "🔄";
-        set(ref(db, 'samity_data'), {
+        let payload = {
             members: window.members,
             mortgages: window.mortgages,
             expenses: window.expenses,
             bankTxns: window.bankTxns,
             annualIncomes: window.annualIncomes
-        }).then(() => {
-            document.getElementById('syncStatus').innerText = "🟢";
-        }).catch((err) => {
-            alert("ডেটা সেভ করতে সমস্যা হয়েছে: " + err.message);
-        });
+        };
+        localStorage.setItem('samity_cache', JSON.stringify(payload));
+        
+        if (navigator.onLine) {
+            document.getElementById('syncStatus').innerText = "🔄";
+            set(ref(db, 'samity_data'), payload).then(() => {
+                document.getElementById('syncStatus').innerText = "🟢";
+            }).catch(() => {
+                document.getElementById('syncStatus').innerText = "🔴";
+            });
+        } else {
+            document.getElementById('syncStatus').innerText = "🔴 (Saved Offline)";
+        }
     }
 </script>
 
@@ -570,9 +558,7 @@
         }
     }
 
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-    }
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
 
     function checkAdminPin(callback) {
         let pin = prompt("পাসওয়ার্ড দিন:");
@@ -620,40 +606,6 @@
         }
     }
 
-    function openEditModal(index) {
-        checkAdminPin(() => {
-            let m = window.members[index];
-            document.getElementById('editIndex').value = index;
-            document.getElementById('editName').value = m.name || '';
-            document.getElementById('editMobile').value = m.mobile || '';
-            document.getElementById('editRole').value = m.role || '';
-            document.getElementById('editNid').value = m.nid || '';
-            document.getElementById('editSavings').value = m.savings || 0;
-            document.getElementById('editLoan').value = m.loan || 0;
-            document.getElementById('editMemberModal').style.display = 'block';
-        });
-    }
-
-    function closeEditModal() {
-        document.getElementById('editMemberModal').style.display = 'none';
-    }
-
-    function saveMemberEdit() {
-        let idx = document.getElementById('editIndex').value;
-        if (idx !== '') {
-            window.members[idx].name = document.getElementById('editName').value;
-            window.members[idx].mobile = document.getElementById('editMobile').value;
-            window.members[idx].role = document.getElementById('editRole').value;
-            window.members[idx].nid = document.getElementById('editNid').value;
-            window.members[idx].savings = parseNum(document.getElementById('editSavings').value);
-            window.members[idx].loan = parseNum(document.getElementById('editLoan').value);
-            
-            window.saveData();
-            closeEditModal();
-            alert("তথ্য সফলভাবে আপডেট করা হয়েছে!");
-        }
-    }
-
     function addDeposit() {
         let idx = document.getElementById('depositMemberSelect').value;
         let amount = parseNum(document.getElementById('depositAmount').value);
@@ -662,8 +614,6 @@
             let m = window.members[idx];
             showReceipt("মাসিক সঞ্চয় জমা", m.name, amount, m.mobile, m.savings);
             window.saveData();
-        } else {
-            alert("পরিমাণ উল্লেখ করুন");
         }
     }
 
@@ -675,9 +625,6 @@
             let m = window.members[idx];
             showReceipt("ঋণ প্রদান", m.name, amount, m.mobile, m.loan, true);
             window.saveData();
-            document.getElementById('loanAmount').value = '';
-        } else {
-            alert("পরিমাণ উল্লেখ করুন");
         }
     }
 
@@ -693,10 +640,6 @@
                 date: document.getElementById('mgDate').value || new Date().toISOString().split('T')[0]
             });
             window.saveData();
-            document.getElementById('mgName').value = '';
-            document.getElementById('mgAmount').value = '';
-        } else {
-            alert("সঠিক তথ্য দিন");
         }
     }
 
@@ -710,10 +653,6 @@
                 date: document.getElementById('expDate').value || new Date().toISOString().split('T')[0]
             });
             window.saveData();
-            document.getElementById('expTitle').value = '';
-            document.getElementById('expAmount').value = '';
-        } else {
-            alert("সঠিক তথ্য দিন");
         }
     }
 
@@ -729,10 +668,6 @@
                 date: document.getElementById('bankDate').value || new Date().toISOString().split('T')[0]
             });
             window.saveData();
-            document.getElementById('bankRef').value = '';
-            document.getElementById('bankAmount').value = '';
-        } else {
-            alert("পরিমাণ উল্লেখ করুন");
         }
     }
 
@@ -747,39 +682,14 @@
                 amount: amount
             });
             window.saveData();
-            document.getElementById('incSource').value = '';
-            document.getElementById('incAmount').value = '';
-        } else {
-            alert("সঠিক তথ্য দিন");
         }
     }
 
-    function deleteMember(idx) {
-        if(confirm("সদস্যকে মুছে ফেলতে চান?")) {
-            window.members.splice(idx, 1);
-            window.saveData();
-        }
-    }
-
-    function deleteMortgage(idx) {
-        window.mortgages.splice(idx, 1);
-        window.saveData();
-    }
-
-    function deleteExpense(idx) {
-        window.expenses.splice(idx, 1);
-        window.saveData();
-    }
-
-    function deleteBankTxn(idx) {
-        window.bankTxns.splice(idx, 1);
-        window.saveData();
-    }
-
-    function deleteAnnualIncome(idx) {
-        window.annualIncomes.splice(idx, 1);
-        window.saveData();
-    }
+    function deleteMember(idx) { window.members.splice(idx, 1); window.saveData(); }
+    function deleteMortgage(idx) { window.mortgages.splice(idx, 1); window.saveData(); }
+    function deleteExpense(idx) { window.expenses.splice(idx, 1); window.saveData(); }
+    function deleteBankTxn(idx) { window.bankTxns.splice(idx, 1); window.saveData(); }
+    function deleteAnnualIncome(idx) { window.annualIncomes.splice(idx, 1); window.saveData(); }
 
     function renderUI() {
         let searchQuery = (document.getElementById('searchBox')?.value || '').toLowerCase();
@@ -803,10 +713,7 @@
                         <td>${m.nid || ''}</td>
                         <td>${m.nominee || ''} (${m.relation || ''})</td>
                         <td>সঞ্চয়: <b>${m.savings || 0}</b><br>ঋণ: <span style="color:red;"><b>${m.loan || 0}</b></span></td>
-                        <td>
-                            <button class="btn btn-warning" style="padding:2px 6px; font-size:11px;" onclick="openEditModal(${index})">এডিট</button>
-                            <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button>
-                        </td>
+                        <td><button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button></td>
                     </tr>
                 `;
             }
@@ -828,37 +735,25 @@
 
         let mortgageTableHtml = '';
         (window.mortgages || []).forEach((m, idx) => {
-            mortgageTableHtml += `<tr>
-                <td>${m.date}</td><td>${m.name}</td><td>${m.phone}</td><td>${m.land}</td><td>${m.amount} টাকা</td>
-                <td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteMortgage(${idx}))">মুছুন</button></td>
-            </tr>`;
+            mortgageTableHtml += `<tr><td>${m.date}</td><td>${m.name}</td><td>${m.phone}</td><td>${m.land}</td><td>${m.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteMortgage(${idx}))">মুছুন</button></td></tr>`;
         });
         document.getElementById('mortgageTable').innerHTML = mortgageTableHtml;
 
         let expenseTableHtml = '';
         (window.expenses || []).forEach((e, idx) => {
-            expenseTableHtml += `<tr>
-                <td>${e.date}</td><td>${e.title}</td><td>${e.amount} টাকা</td>
-                <td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteExpense(${idx}))">মুছুন</button></td>
-            </tr>`;
+            expenseTableHtml += `<tr><td>${e.date}</td><td>${e.title}</td><td>${e.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteExpense(${idx}))">মুছুন</button></td></tr>`;
         });
         document.getElementById('expenseTable').innerHTML = expenseTableHtml;
 
         let bankTableHtml = '';
         (window.bankTxns || []).forEach((b, idx) => {
-            bankTableHtml += `<tr>
-                <td>${b.date}</td><td>${b.type === 'deposit' ? 'জমা' : 'উত্তোলন'}</td><td>${b.ref}</td><td>${b.amount} টাকা</td>
-                <td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteBankTxn(${idx}))">মুছুন</button></td>
-            </tr>`;
+            bankTableHtml += `<tr><td>${b.date}</td><td>${b.type === 'deposit' ? 'জমা' : 'উত্তোলন'}</td><td>${b.ref}</td><td>${b.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteBankTxn(${idx}))">মুছুন</button></td></tr>`;
         });
         document.getElementById('bankTable').innerHTML = bankTableHtml;
 
         let annualIncomeTableHtml = '';
         (window.annualIncomes || []).forEach((a, idx) => {
-            annualIncomeTableHtml += `<tr>
-                <td>${a.year}</td><td>${a.source}</td><td>${a.amount} টাকা</td>
-                <td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteAnnualIncome(${idx}))">মুছুন</button></td>
-            </tr>`;
+            annualIncomeTableHtml += `<tr><td>${a.year}</td><td>${a.source}</td><td>${a.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteAnnualIncome(${idx}))">মুছুন</button></td></tr>`;
         });
         document.getElementById('annualIncomeTable').innerHTML = annualIncomeTableHtml;
 
@@ -900,7 +795,56 @@
         });
     }
 
-    /* WhatsApp রসিদ দেখানোর জন্য আপডেট করা ফাংশন */
+    /* Advanced Reports & Export Functions */
+    function exportToExcel(type) {
+        let data = [];
+        if (type === 'members') {
+            data = window.members.map(m => ({
+                "নাম": m.name,
+                "পদবী": m.role,
+                "মোবাইল": m.mobile,
+                "NID": m.nid,
+                "মোট সঞ্চয়": m.savings || 0,
+                "মোট ঋণ": m.loan || 0
+            }));
+        } else if (type === 'loans') {
+            data = window.members.filter(m => (m.loan || 0) > 0).map(m => ({
+                "নাম": m.name,
+                "মোবাইল": m.mobile,
+                "ঋণের পরিমাণ": m.loan
+            }));
+        }
+
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Report");
+        XLSX.writeFile(wb, `${type}_report.xlsx`);
+    }
+
+    function exportToPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.text("Ekta Group Samity - Balance Sheet Report", 14, 15);
+        
+        let reportData = [
+            ["Total Savings", document.getElementById('totalSavings').innerText],
+            ["Total Loans", document.getElementById('totalLoans').innerText],
+            ["Total Mortgages", document.getElementById('totalMortgages').innerText],
+            ["Total Expenses", document.getElementById('totalExpenses').innerText],
+            ["Bank Balance", document.getElementById('abBankBalance').innerText],
+            ["Net Balance", document.getElementById('netBalance').innerText]
+        ];
+
+        doc.autoTable({
+            startY: 25,
+            head: [['Category', 'Amount']],
+            body: reportData,
+        });
+
+        doc.save("Balance_Sheet.pdf");
+    }
+
     function showReceipt(type, name, amount, mobile, totalBalance, isLoan = false) {
         let dateStr = new Date().toLocaleDateString('bn-BD');
         document.getElementById('receiptDetails').innerHTML = `
@@ -920,15 +864,9 @@
     }
 
     function sendWhatsAppReceipt(memberName, mobileNumber, type, amount, totalBalance, isLoan) {
-        if (!mobileNumber) {
-            alert("সদস্যের মোবাইল নম্বর পাওয়া যায়নি!");
-            return;
-        }
-
+        if (!mobileNumber) { alert("সদস্যের মোবাইল নম্বর পাওয়া যায়নি!"); return; }
         let formattedMobile = mobileNumber.replace(/[^0-9]/g, '');
-        if (formattedMobile.startsWith('0')) {
-            formattedMobile = '88' + formattedMobile;
-        }
+        if (formattedMobile.startsWith('0')) formattedMobile = '88' + formattedMobile;
 
         let dateStr = new Date().toLocaleDateString('bn-BD');
         let message = `*একতা গ্রুপ সমিতি - ডিজিটাল রসিদ*%0A` +
@@ -940,13 +878,10 @@
                       `📅 *তারিখ:* ${dateStr}%0A%0A` +
                       `ধন্যবাদ আমাদের সাথে থাকার জন্য।`;
 
-        let whatsappUrl = `https://wa.me/${formattedMobile}?text=${message}`;
-        window.open(whatsappUrl, '_blank');
+        window.open(`https://wa.me/${formattedMobile}?text=${message}`, '_blank');
     }
 
-    function closeReceipt() {
-        document.getElementById('receiptModal').style.display = 'none';
-    }
+    function closeReceipt() { document.getElementById('receiptModal').style.display = 'none'; }
 
     function downloadBackup() {
         let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
@@ -978,31 +913,41 @@
                 window.annualIncomes = data.annualIncomes || [];
                 window.saveData();
                 alert("ব্যাকআপ রিস্টোর সফল!");
-            } catch(err) {
-                alert("ভুল ফাইল ফরম্যাট!");
-            }
+            } catch(err) { alert("ভুল ফাইল ফরম্যাট!"); }
         };
         reader.readAsText(file);
     }
 
     function resetData() {
         if (confirm("ডাটাবেজ খালি করতে চান?")) {
-            window.members = [];
-            window.mortgages = [];
-            window.expenses = [];
-            window.bankTxns = [];
-            window.annualIncomes = [];
+            window.members = []; window.mortgages = []; window.expenses = []; window.bankTxns = []; window.annualIncomes = [];
             window.saveData();
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        let today = new Date().toISOString().split('T')[0];
-        ['depositDate', 'loanDate', 'mgDate', 'expDate', 'bankDate'].forEach(id => {
-            let elem = document.getElementById(id);
-            if (elem) elem.value = today;
-        });
-    });
+    // PWA Service Worker Registration & Cache
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            const CACHE_NAME = 'samity-v1';
+            self.addEventListener('install', e => {
+                e.waitUntil(
+                    caches.open(CACHE_NAME).then(cache => {
+                        return cache.addAll(['./']);
+                    })
+                );
+            });
+            self.addEventListener('fetch', e => {
+                e.respondWith(
+                    caches.match(e.request).then(response => {
+                        return response || fetch(e.request);
+                    })
+                );
+            });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch(err => console.log('PWA Service Worker Error:', err));
+    }
 </script>
 </body>
 </html>
