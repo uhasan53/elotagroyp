@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>একতা গ্রুপ - স্মার্ট সমিতি ব্যবস্থাপনা</title>
     
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJzaG9ydF9uYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40iLAogICJuYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40gLSBzc21hcnQgc2FtaXR5IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly92aWEucGxhY2Vob2xkZXIuY29tLzE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMyYzNlNTAiLAogICJ0aGVtZV9jb2xvciI6ICIjMjdhZTYwIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIgp9">
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJzaG9ydF9uYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40iLAogICJuYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40LSBzc21hcnQgc2FtaXR5IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly92aWEucGxhY2Vob2xkZXIuY29tLzE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMyYzNlNTAiLAogICJ0aGVtZV9jb2xvciI6ICIjMjdhZTYwIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIgp9">
     <meta name="theme-color" content="#27ae60">
 
     <style>
@@ -122,6 +122,8 @@
 
         .report-section { margin-bottom: 25px; }
         .report-section h4 { margin-bottom: 8px; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 3px; }
+
+        .action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
 
         @media (max-width: 768px) {
             .sidebar { position: fixed; left: -260px; top: 0; bottom: 0; }
@@ -532,7 +534,6 @@
     let myChart = null;
     let renderTimer = null;
 
-    // Helper: Dynamic Script Loader for Lazy Loading External Libraries
     function loadScript(src) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
@@ -757,6 +758,87 @@
         }
     }
 
+    // --- EDIT FUNCTIONS ---
+    function editMember(idx) {
+        let m = window.members[idx];
+        let name = prompt("সদস্যের নাম:", m.name || "");
+        if (name === null) return;
+        let role = prompt("পদবী:", m.role || "");
+        let mobile = prompt("মোবাইল নম্বর:", m.mobile || "");
+        let nid = prompt("NID নম্বর:", m.nid || "");
+        let savings = prompt("মোট সঞ্চয় (টাকা):", m.savings || 0);
+        let loan = prompt("অবশিষ্ট ঋণ (টাকা):", m.loan || 0);
+
+        m.name = name.trim() || m.name;
+        m.role = role !== null ? role : m.role;
+        m.mobile = mobile !== null ? mobile : m.mobile;
+        m.nid = nid !== null ? nid : m.nid;
+        m.savings = savings !== null ? parseNum(savings) : m.savings;
+        m.loan = loan !== null ? parseNum(loan) : m.loan;
+
+        if(window.saveData) window.saveData();
+    }
+
+    function editMortgage(idx) {
+        let mg = window.mortgages[idx];
+        let name = prompt("বন্ধকদাতার নাম:", mg.name || "");
+        if (name === null) return;
+        let phone = prompt("মোবাইল নম্বর:", mg.phone || "");
+        let land = prompt("জমির বিবরণ:", mg.land || "");
+        let amount = prompt("টাকার পরিমাণ:", mg.amount || 0);
+        let date = prompt("তারিখ (YYYY-MM-DD):", mg.date || "");
+
+        mg.name = name.trim() || mg.name;
+        mg.phone = phone !== null ? phone : mg.phone;
+        mg.land = land !== null ? land : mg.land;
+        mg.amount = amount !== null ? parseNum(amount) : mg.amount;
+        mg.date = date !== null ? date : mg.date;
+
+        if(window.saveData) window.saveData();
+    }
+
+    function editExpense(idx) {
+        let exp = window.expenses[idx];
+        let title = prompt("খরচের খাত:", exp.title || "");
+        if (title === null) return;
+        let amount = prompt("পরিমাণ (টাকা):", exp.amount || 0);
+        let date = prompt("তারিখ (YYYY-MM-DD):", exp.date || "");
+
+        exp.title = title.trim() || exp.title;
+        exp.amount = amount !== null ? parseNum(amount) : exp.amount;
+        exp.date = date !== null ? date : exp.date;
+
+        if(window.saveData) window.saveData();
+    }
+
+    function editBankTxn(idx) {
+        let b = window.bankTxns[idx];
+        let ref = prompt("রেফারেন্স / বিবরণ:", b.ref || "");
+        if (ref === null) return;
+        let amount = prompt("পরিমাণ (টাকা):", b.amount || 0);
+        let date = prompt("তারিখ (YYYY-MM-DD):", b.date || "");
+
+        b.ref = ref.trim() || b.ref;
+        b.amount = amount !== null ? parseNum(amount) : b.amount;
+        b.date = date !== null ? date : b.date;
+
+        if(window.saveData) window.saveData();
+    }
+
+    function editAnnualIncome(idx) {
+        let ai = window.annualIncomes[idx];
+        let year = prompt("বছর:", ai.year || "");
+        if (year === null) return;
+        let source = prompt("আয়ের উৎস:", ai.source || "");
+        let amount = prompt("পরিমাণ (টাকা):", ai.amount || 0);
+
+        ai.year = year !== null ? year : ai.year;
+        ai.source = source !== null ? source : ai.source;
+        ai.amount = amount !== null ? parseNum(amount) : ai.amount;
+
+        if(window.saveData) window.saveData();
+    }
+
     function deleteMember(idx) { window.members.splice(idx, 1); if(window.saveData) window.saveData(); }
     function deleteMortgage(idx) { window.mortgages.splice(idx, 1); if(window.saveData) window.saveData(); }
     function deleteExpense(idx) { window.expenses.splice(idx, 1); if(window.saveData) window.saveData(); }
@@ -791,7 +873,12 @@
                         <td>${m.nid || ''}</td>
                         <td>${m.nominee || ''} (${m.relation || ''})</td>
                         <td>সঞ্চয়: <b>${formatBnNum(m.savings || 0)} টাকা</b><br>ঋণ: <span style="color:red;"><b>${formatBnNum(m.loan || 0)} টাকা</b></span></td>
-                        <td><button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn btn-warning" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => editMember(${index}))">এডিট</button>
+                                <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button>
+                            </div>
+                        </td>
                     </tr>
                 `;
             }
@@ -833,7 +920,12 @@
         let rptMortgagesHtml = '';
         (window.mortgages || []).forEach((m, idx) => {
             let row = `<tr><td>${m.date}</td><td>${m.name}</td><td>${m.phone}</td><td>${m.land}</td><td>${formatBnNum(m.amount)} টাকা</td>`;
-            mortgageTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteMortgage(${idx}))">মুছুন</button></td></tr>`;
+            mortgageTableHtml += `${row}<td>
+                <div class="action-btns">
+                    <button class="btn btn-warning" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => editMortgage(${idx}))">এডিট</button>
+                    <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMortgage(${idx}))">মুছুন</button>
+                </div>
+            </td></tr>`;
             rptMortgagesHtml += `${row}</tr>`;
         });
         let mgTable = document.getElementById('mortgageTable');
@@ -845,7 +937,12 @@
         let rptExpensesHtml = '';
         (window.expenses || []).forEach((e, idx) => {
             let row = `<tr><td>${e.date}</td><td>${e.title}</td><td>${formatBnNum(e.amount)} টাকা</td>`;
-            expenseTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteExpense(${idx}))">মুছুন</button></td></tr>`;
+            expenseTableHtml += `${row}<td>
+                <div class="action-btns">
+                    <button class="btn btn-warning" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => editExpense(${idx}))">এডিট</button>
+                    <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteExpense(${idx}))">মুছুন</button>
+                </div>
+            </td></tr>`;
             rptExpensesHtml += `${row}</tr>`;
         });
         let expTable = document.getElementById('expenseTable');
@@ -857,7 +954,12 @@
         let rptBankHtml = '';
         (window.bankTxns || []).forEach((b, idx) => {
             let row = `<tr><td>${b.date}</td><td>${b.type === 'deposit' ? 'জমা' : 'উত্তোলন'}</td><td>${b.ref}</td><td>${formatBnNum(b.amount)} টাকা</td>`;
-            bankTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteBankTxn(${idx}))">মুছুন</button></td></tr>`;
+            bankTableHtml += `${row}<td>
+                <div class="action-btns">
+                    <button class="btn btn-warning" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => editBankTxn(${idx}))">এডিট</button>
+                    <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteBankTxn(${idx}))">মুছুন</button>
+                </div>
+            </td></tr>`;
             rptBankHtml += `${row}</tr>`;
         });
         let bkTable = document.getElementById('bankTable');
@@ -869,7 +971,12 @@
         let rptIncomeHtml = '';
         (window.annualIncomes || []).forEach((a, idx) => {
             let row = `<tr><td>${formatBnNum(a.year)}</td><td>${a.source}</td><td>${formatBnNum(a.amount)} টাকা</td>`;
-            annualIncomeTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteAnnualIncome(${idx}))">মুছুন</button></td></tr>`;
+            annualIncomeTableHtml += `${row}<td>
+                <div class="action-btns">
+                    <button class="btn btn-warning" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => editAnnualIncome(${idx}))">এডিট</button>
+                    <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteAnnualIncome(${idx}))">মুছুন</button>
+                </div>
+            </td></tr>`;
             rptIncomeHtml += `${row}</tr>`;
         });
         let aiTable = document.getElementById('annualIncomeTable');
@@ -906,7 +1013,6 @@
         updateChart(totalSavings, totalLoans, totalMortgages, totalExpenses, totalAnnualIncome);
     }
 
-    // Dynamic Chart Update
     async function updateChart(savings, loans, mortgages, expenses, income) {
         const canvas = document.getElementById('financeChart');
         if(!canvas) return;
@@ -1106,7 +1212,6 @@
     const db = getDatabase(app);
     const dbRef = ref(db, 'samity_data');
 
-    // Optimization: Listen to Firebase Data Updates efficiently
     onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
