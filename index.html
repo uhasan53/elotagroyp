@@ -105,6 +105,7 @@
         .btn-print { background: #2980b9; }
         .btn-warning { background: #f39c12; }
         .btn-danger { background: #e74c3c; }
+        .btn-whatsapp { background: #25D366; color: white; }
 
         table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 13px; }
         th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; }
@@ -345,7 +346,7 @@
                 </div>
             </div>
 
-            <!-- PAGE 6: LOAN LIST (নতুন যুক্ত করা হয়েছে) -->
+            <!-- PAGE 6: LOAN LIST -->
             <div id="page-loan-list" class="page-module">
                 <h3 style="margin-bottom: 15px;">সকল ঋণের তালিকা</h3>
                 <table>
@@ -447,11 +448,14 @@
         <p style="font-size: 11px; color: #666;">ডিজিটাল রসিদ</p>
         <hr style="margin: 8px 0;">
         <div id="receiptDetails" style="text-align: left; font-size: 13px; line-height: 1.6;"></div>
-        <button class="btn btn-print" style="margin-top: 12px; width: 100%;" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+        
+        <!-- WhatsApp Receipt Button -->
+        <button id="whatsappBtn" class="btn btn-whatsapp" style="margin-top: 12px; width: 100%;">💬 WhatsApp-এ রসিদ পাঠান</button>
+        <button class="btn btn-print" style="margin-top: 8px; width: 100%;" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
     </div>
 </div>
 
-<!-- Edit Member Modal (নতুন যুক্ত করা হয়েছে) -->
+<!-- Edit Member Modal -->
 <div id="editMemberModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeEditModal()">&times;</span>
@@ -616,7 +620,6 @@
         }
     }
 
-    /* নতুন যুক্ত করা এডিট ফাংশনসমূহ */
     function openEditModal(index) {
         checkAdminPin(() => {
             let m = window.members[index];
@@ -656,7 +659,8 @@
         let amount = parseNum(document.getElementById('depositAmount').value);
         if (idx !== '' && amount > 0) {
             window.members[idx].savings = (window.members[idx].savings || 0) + amount;
-            showReceipt("মাসিক সঞ্চয় জমা", window.members[idx].name, amount);
+            let m = window.members[idx];
+            showReceipt("মাসিক সঞ্চয় জমা", m.name, amount, m.mobile, m.savings);
             window.saveData();
         } else {
             alert("পরিমাণ উল্লেখ করুন");
@@ -668,7 +672,8 @@
         let amount = parseNum(document.getElementById('loanAmount').value);
         if (idx !== '' && amount > 0) {
             window.members[idx].loan = (window.members[idx].loan || 0) + amount;
-            showReceipt("ঋণ প্রদান", window.members[idx].name, amount);
+            let m = window.members[idx];
+            showReceipt("ঋণ প্রদান", m.name, amount, m.mobile, m.loan, true);
             window.saveData();
             document.getElementById('loanAmount').value = '';
         } else {
@@ -806,7 +811,6 @@
                 `;
             }
 
-            /* ঋণ থাকলে ঋণের তালিকায় যুক্ত করা */
             if ((m.loan || 0) > 0) {
                 loanCount++;
                 loanListTableHtml += `
@@ -896,14 +900,48 @@
         });
     }
 
-    function showReceipt(type, name, amount) {
+    /* WhatsApp রসিদ দেখানোর জন্য আপডেট করা ফাংশন */
+    function showReceipt(type, name, amount, mobile, totalBalance, isLoan = false) {
+        let dateStr = new Date().toLocaleDateString('bn-BD');
         document.getElementById('receiptDetails').innerHTML = `
-            <b>তারিখ:</b> ${new Date().toLocaleDateString('bn-BD')}<br>
+            <b>তারিখ:</b> ${dateStr}<br>
             <b>সদস্য:</b> ${name}<br>
             <b>লেনদেন:</b> ${type}<br>
-            <b>পরিমাণ:</b> ${amount} টাকা
+            <b>পরিমাণ:</b> ${amount} টাকা<br>
+            <b>বর্তমান মোট ${isLoan ? 'ঋণ' : 'সঞ্চয়'}:</b> ${totalBalance} টাকা
         `;
+
+        let waBtn = document.getElementById('whatsappBtn');
+        waBtn.onclick = function() {
+            sendWhatsAppReceipt(name, mobile, type, amount, totalBalance, isLoan);
+        };
+
         document.getElementById('receiptModal').style.display = 'block';
+    }
+
+    function sendWhatsAppReceipt(memberName, mobileNumber, type, amount, totalBalance, isLoan) {
+        if (!mobileNumber) {
+            alert("সদস্যের মোবাইল নম্বর পাওয়া যায়নি!");
+            return;
+        }
+
+        let formattedMobile = mobileNumber.replace(/[^0-9]/g, '');
+        if (formattedMobile.startsWith('0')) {
+            formattedMobile = '88' + formattedMobile;
+        }
+
+        let dateStr = new Date().toLocaleDateString('bn-BD');
+        let message = `*একতা গ্রুপ সমিতি - ডিজিটাল রসিদ*%0A` +
+                      `----------------------------------%0A` +
+                      `👤 *সদস্য:* ${memberName}%0A` +
+                      `📝 *লেনদেন:* ${type}%0A` +
+                      `💵 *পরিমাণ:* ${amount} টাকা%0A` +
+                      `💰 *বর্তমান মোট ${isLoan ? 'ঋণ' : 'সঞ্চয়'}:* ${totalBalance} টাকা%0A` +
+                      `📅 *তারিখ:* ${dateStr}%0A%0A` +
+                      `ধন্যবাদ আমাদের সাথে থাকার জন্য।`;
+
+        let whatsappUrl = `https://wa.me/${formattedMobile}?text=${message}`;
+        window.open(whatsappUrl, '_blank');
     }
 
     function closeReceipt() {
