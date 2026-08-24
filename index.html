@@ -155,7 +155,6 @@
             #memberTable td:nth-of-type(9):before { content: "অ্যাকশন:"; }
         }
 
-        /* Print Style for Single Section & Full Page */
         @media print {
             body * { visibility: hidden; }
             .sidebar, .top-nav, .form-card, .btn { display: none !important; }
@@ -250,7 +249,7 @@
                 </div>
             </div>
 
-            <!-- PAGE 2: ADVANCED REPORTS (WITH FULL & SINGLE PRINT) -->
+            <!-- PAGE 2: ADVANCED REPORTS -->
             <div id="page-reports" class="page-module">
                 <div class="form-card" style="margin-bottom: 20px;">
                     <h3 style="margin-bottom: 8px;">📊 সমিতির পূর্ণাঙ্গ অ্যাডভান্সড রিপোর্ট</h3>
@@ -264,7 +263,6 @@
                     </div>
                 </div>
 
-                <!-- ১. সার্বিক হিসাব সারসংক্ষেপ -->
                 <div class="report-section" id="sec-summary">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <h4>📌 ১. সার্বিক অর্থনৈতিক সারসংক্ষেপ</h4>
@@ -272,10 +270,7 @@
                     </div>
                     <table>
                         <thead>
-                            <tr>
-                                <th>হিসাবের বিবরণ</th>
-                                <th>মোট পরিমাণ</th>
-                            </tr>
+                            <tr><th>হিসাবের বিবরণ</th><th>মোট পরিমাণ</th></tr>
                         </thead>
                         <tbody>
                             <tr><td>মোট সংগৃহীত সঞ্চয়</td><td><b id="rptTotalSavings" style="color:#27ae60;">০ টাকা</b></td></tr>
@@ -292,7 +287,6 @@
                     </table>
                 </div>
 
-                <!-- ২. সদস্য সঞ্চয় ও ঋণ বিস্তারিত -->
                 <div class="report-section" id="sec-members">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <h4>👥 ২. সদস্য সঞ্চয় ও ঋণের পূর্ণাঙ্গ রিপোর্ট</h4>
@@ -300,20 +294,12 @@
                     </div>
                     <table>
                         <thead>
-                            <tr>
-                                <th>ক্রম</th>
-                                <th>সদস্যের নাম</th>
-                                <th>পদবী</th>
-                                <th>মোবাইল</th>
-                                <th>মোট জমা সঞ্চয়</th>
-                                <th>অবশিষ্ট ঋণ</th>
-                            </tr>
+                            <tr><th>ক্রম</th><th>সদস্যের নাম</th><th>পদবী</th><th>মোবাইল</th><th>মোট জমা সঞ্চয়</th><th>অবশিষ্ট ঋণ</th></tr>
                         </thead>
                         <tbody id="rptMembersTable"></tbody>
                     </table>
                 </div>
 
-                <!-- ৩. জমি বন্ধক হিসাব -->
                 <div class="report-section" id="sec-mortgages">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <h4>🏡 ৩. জমি বন্ধকের হিসাব</h4>
@@ -321,19 +307,12 @@
                     </div>
                     <table>
                         <thead>
-                            <tr>
-                                <th>তারিখ</th>
-                                <th>নাম</th>
-                                <th>ফোন</th>
-                                <th>জমির বিবরণ</th>
-                                <th>টাকার পরিমাণ</th>
-                            </tr>
+                            <tr><th>তারিখ</th><th>নাম</th><th>ফোন</th><th>জমির বিবরণ</th><th>টাকার পরিমাণ</th></tr>
                         </thead>
                         <tbody id="rptMortgageTable"></tbody>
                     </table>
                 </div>
 
-                <!-- ৪. সমিতির খরচসমূহ -->
                 <div class="report-section" id="sec-expenses">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <h4>📉 ৪. সমিতির খরচ বিবরণী</h4>
@@ -341,17 +320,12 @@
                     </div>
                     <table>
                         <thead>
-                            <tr>
-                                <th>তারিখ</th>
-                                <th>খরচের খাত</th>
-                                <th>পরিমাণ</th>
-                            </tr>
+                            <tr><th>তারিখ</th><th>খরচের খাত</th><th>পরিমাণ</th></tr>
                         </thead>
                         <tbody id="rptExpenseTable"></tbody>
                     </table>
                 </div>
 
-                <!-- ৫. ব্যাংক লেনদেন বিস্তারিত -->
                 <div class="report-section" id="sec-bank">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <h4>🏦 ৫. AB Bank লেনদেন বিবরণী</h4>
@@ -359,18 +333,12 @@
                     </div>
                     <table>
                         <thead>
-                            <tr>
-                                <th>তারিখ</th>
-                                <th>লেনদেনের ধরন</th>
-                                <th>রেফারেন্স / বিবরণ</th>
-                                <th>পরিমাণ</th>
-                            </tr>
+                            <tr><th>তারিখ</th><th>লেনদেনের ধরন</th><th>রেফারেন্স / বিবরণ</th><th>পরিমাণ</th></tr>
                         </thead>
                         <tbody id="rptBankTable"></tbody>
                     </table>
                 </div>
 
-                <!-- ৬. বার্ষিক আয়ের হিসাব -->
                 <div class="report-section" id="sec-annual">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <h4>📈 ৬. বার্ষিক আয়ের বিবরণী</h4>
@@ -378,11 +346,7 @@
                     </div>
                     <table>
                         <thead>
-                            <tr>
-                                <th>বছর</th>
-                                <th>উৎস</th>
-                                <th>পরিমাণ</th>
-                            </tr>
+                            <tr><th>বছর</th><th>উৎস</th><th>পরিমাণ</th></tr>
                         </thead>
                         <tbody id="rptAnnualIncomeTable"></tbody>
                     </table>
@@ -397,17 +361,7 @@
                 </div>
                 <table>
                     <thead>
-                        <tr>
-                            <th>ক্রম</th>
-                            <th>ছবি</th>
-                            <th>নাম ও পদবী</th>
-                            <th>অভিভাবক</th>
-                            <th>মোবাইল</th>
-                            <th>NID</th>
-                            <th>নমিনী</th>
-                            <th>সঞ্চয় ও ঋণ</th>
-                            <th>অ্যাকশন</th>
-                        </tr>
+                        <tr><th>ক্রম</th><th>ছবি</th><th>নাম ও পদবী</th><th>অভিভাবক</th><th>মোবাইল</th><th>NID</th><th>নমিনী</th><th>সঞ্চয় ও ঋণ</th><th>অ্যাকশন</th></tr>
                     </thead>
                     <tbody id="memberTable"></tbody>
                 </table>
@@ -476,12 +430,7 @@
                 <h3 style="margin-bottom: 15px;">সকল ঋণের তালিকা</h3>
                 <table>
                     <thead>
-                        <tr>
-                            <th>ক্রম</th>
-                            <th>নাম</th>
-                            <th>মোবাইল</th>
-                            <th>ঋণের পরিমাণ</th>
-                        </tr>
+                        <tr><th>ক্রম</th><th>নাম</th><th>মোবাইল</th><th>ঋণের পরিমাণ</th></tr>
                     </thead>
                     <tbody id="loanListTable"></tbody>
                 </table>
@@ -579,7 +528,6 @@
     </div>
 </div>
 
-<!-- Global Data & Application Core Scripts -->
 <script>
     window.adminPin = "R@-423166y";
     window.members = [];
@@ -628,7 +576,6 @@
         }
     }
 
-    /* Print Single Section Handler */
     function printSection(elementId) {
         let targetEl = document.getElementById(elementId);
         if(!targetEl) return;
@@ -641,14 +588,34 @@
     function loadLocalStorage() {
         let cached = localStorage.getItem('samity_cache');
         if(cached) {
-            let data = JSON.parse(cached);
-            window.members = data.members || [];
-            window.mortgages = data.mortgages || [];
-            window.expenses = data.expenses || [];
-            window.bankTxns = data.bankTxns || [];
-            window.annualIncomes = data.annualIncomes || [];
-            renderUI();
+            try {
+                let data = JSON.parse(cached);
+                window.members = data.members || [];
+                window.mortgages = data.mortgages || [];
+                window.expenses = data.expenses || [];
+                window.bankTxns = data.bankTxns || [];
+                window.annualIncomes = data.annualIncomes || [];
+                renderUI();
+            } catch(e) { console.error(e); }
         }
+    }
+
+    // Image Resizer to prevent Storage limits
+    function resizeImage(file, callback) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let img = new Image();
+            img.onload = function() {
+                let canvas = document.createElement('canvas');
+                let ctx = canvas.getContext('2d');
+                canvas.width = 100;
+                canvas.height = 100;
+                ctx.drawImage(img, 0, 0, 100, 100);
+                callback(canvas.toDataURL('image/jpeg', 0.7));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
     }
 
     function addNewMember() {
@@ -656,8 +623,6 @@
         if (!name) { alert("নাম লিখুন"); return; }
 
         let photoFile = document.getElementById('mPhoto').files[0];
-        let photoUrl = 'https://via.placeholder.com/40';
-
         let processInsert = (imgData) => {
             let member = {
                 name: name,
@@ -680,11 +645,9 @@
         };
 
         if (photoFile) {
-            let reader = new FileReader();
-            reader.onload = (e) => processInsert(e.target.result);
-            reader.readAsDataURL(photoFile);
+            resizeImage(photoFile, processInsert);
         } else {
-            processInsert(photoUrl);
+            processInsert('https://via.placeholder.com/40');
         }
     }
 
@@ -888,7 +851,6 @@
         let abBankBalance = (window.bankTxns || []).reduce((sum, b) => b.type === 'deposit' ? sum + b.amount : sum - b.amount, 0);
         let netBalance = (totalSavings + totalAnnualIncome) - (totalLoans + totalMortgages + totalExpenses);
 
-        // Dashboard Elements Update
         if(document.getElementById('totalSavings')) document.getElementById('totalSavings').innerText = totalSavings + ' টাকা';
         if(document.getElementById('totalLoans')) document.getElementById('totalLoans').innerText = totalLoans + ' টাকা';
         if(document.getElementById('totalMortgages')) document.getElementById('totalMortgages').innerText = totalMortgages + ' টাকা';
@@ -897,7 +859,6 @@
         if(document.getElementById('totalAnnualIncome')) document.getElementById('totalAnnualIncome').innerText = totalAnnualIncome + ' টাকা';
         if(document.getElementById('netBalance')) document.getElementById('netBalance').innerText = netBalance + ' টাকা';
 
-        // Advanced Report Summary Elements Update
         if(document.getElementById('rptTotalSavings')) document.getElementById('rptTotalSavings').innerText = totalSavings + ' টাকা';
         if(document.getElementById('rptTotalLoans')) document.getElementById('rptTotalLoans').innerText = totalLoans + ' টাকা';
         if(document.getElementById('rptTotalMortgages')) document.getElementById('rptTotalMortgages').innerText = totalMortgages + ' টাকা';
@@ -1042,27 +1003,20 @@
         reader.onload = function(e) {
             try {
                 let data = JSON.parse(e.target.result);
-
                 if (Array.isArray(data)) {
                     window.members = data;
-                    window.mortgages = [];
-                    window.expenses = [];
-                    window.bankTxns = [];
-                    window.annualIncomes = [];
+                    window.mortgages = []; window.expenses = []; window.bankTxns = []; window.annualIncomes = [];
                 } else if (typeof data === 'object' && data !== null) {
-                    window.members = data.members || data.memberList || [];
+                    window.members = data.members || [];
                     window.mortgages = data.mortgages || [];
                     window.expenses = data.expenses || [];
                     window.bankTxns = data.bankTxns || [];
                     window.annualIncomes = data.annualIncomes || [];
-                } else {
-                    throw new Error("Invalid structure");
                 }
-
                 if(window.saveData) window.saveData();
                 alert("ব্যাকআপ রিস্টোর সফল হয়েছে!");
             } catch(err) {
-                alert("ফাইলটিতে সঠিক ডাটা পাওয়া যায়নি! অনুগ্রহ করে সঠিক JSON ব্যাকআপ ফাইল নির্বাচন করুন।");
+                alert("সঠিক JSON ব্যাকআপ ফাইল নির্বাচন করুন।");
             }
         };
         reader.readAsText(file);
@@ -1085,11 +1039,9 @@
     });
 </script>
 
-<!-- Firebase Connection via Standard JS Modules -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBedSHd_vT2J8QBbOID3I08h3x2TWJDUo4",
@@ -1103,13 +1055,9 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const auth = getAuth(app);
-
-    signInAnonymously(auth).then(() => {
-        console.log("Firebase Auth কানেক্টেড");
-    }).catch(err => console.log("Auth error:", err));
-
     const dbRef = ref(db, 'samity_data');
+
+    // Real-time Database Listener
     onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1121,13 +1069,20 @@
             localStorage.setItem('samity_cache', JSON.stringify(data));
         }
         let statusEl = document.getElementById('syncStatus');
-        if(statusEl) statusEl.innerText = "অনলাইন";
+        if(statusEl) {
+            statusEl.innerText = "অনলাইন";
+            statusEl.style.background = "#27ae60";
+        }
         if(typeof renderUI === 'function') renderUI();
     }, (error) => {
         let statusEl = document.getElementById('syncStatus');
-        if(statusEl) statusEl.innerText = "অফলাইন";
+        if(statusEl) {
+            statusEl.innerText = "অফলাইন মোড (লোকাল সেভ)";
+            statusEl.style.background = "#e67e22";
+        }
     });
 
+    // Save Data Function (Handles Online & Offline Storage)
     window.saveData = function() {
         let payload = {
             members: window.members,
@@ -1136,15 +1091,28 @@
             bankTxns: window.bankTxns,
             annualIncomes: window.annualIncomes
         };
-        localStorage.setItem('samity_cache', JSON.stringify(payload));
+
+        // Save to browser memory first
+        try {
+            localStorage.setItem('samity_cache', JSON.stringify(payload));
+        } catch(e) {
+            console.error("Local storage error:", e);
+        }
         
+        // Sync to cloud
         let statusEl = document.getElementById('syncStatus');
         if (navigator.onLine) {
             if(statusEl) statusEl.innerText = "সেভ হচ্ছে...";
-            set(ref(db, 'samity_data'), payload).then(() => {
-                if(statusEl) statusEl.innerText = "অনলাইন";
-            }).catch(() => {
-                if(statusEl) statusEl.innerText = "অফলাইন";
+            set(dbRef, payload).then(() => {
+                if(statusEl) {
+                    statusEl.innerText = "অনলাইন";
+                    statusEl.style.background = "#27ae60";
+                }
+            }).catch((err) => {
+                if(statusEl) {
+                    statusEl.innerText = "লোকাল সেভড (ক্লাউড ব্লক)";
+                    statusEl.style.background = "#e67e22";
+                }
             });
         }
         if(typeof renderUI === 'function') renderUI();
