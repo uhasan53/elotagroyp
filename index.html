@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>একতা গ্রুপ - স্মার্ট সমিতি ব্যবস্থাপনা</title>
     
-    <!-- PWA Web App Manifest -->
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJzaG9ydF9uYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40iLAogICJuYW1lIjogIuCmrOCmleCmuOCmviDgpqfgp43gpqPgp40gLSBzc21hcnQgc2FtaXR5IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly92aWEucGxhY2Vob2xkZXIuY29tLzE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIgogICAgfQogIF0sCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMyYzNlNTAiLAogICJ0aGVtZV9jb2xvciI6ICIjMjdhZTYwIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIgp9">
     <meta name="theme-color" content="#27ae60">
     
-    <!-- Chart.js, jsPDF & SheetJS (XLSX) CDN -->
+    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -101,7 +100,7 @@
         .card h3 { font-size: 12px; color: #7f8c8d; text-transform: uppercase; }
         .card p { font-size: 18px; font-weight: bold; margin-top: 6px; }
 
-        .chart-box { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 300px; margin-bottom: 20px; }
+        .chart-box { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 320px; margin-bottom: 20px; }
 
         .form-card { background: var(--card-bg); padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 800px; }
         .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
@@ -111,7 +110,7 @@
             .form-row input, .form-row select { min-width: 200px; }
         }
 
-        .btn { padding: 8px 14px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn { padding: 8px 12px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .btn-print { background: #2980b9; }
         .btn-warning { background: #f39c12; }
         .btn-danger { background: #e74c3c; }
@@ -123,7 +122,7 @@
         th { background: rgba(0,0,0,0.03); color: var(--text-color); }
         .badge { background: #3498db; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
         .thumb { width: 35px; height: 35px; object-fit: cover; border-radius: 50%; }
-        .status-badge { font-size: 11px; background: #27ae60; padding: 3px 6px; border-radius: 4px; color: white; }
+        .status-badge { font-size: 11px; background: #27ae60; padding: 4px 8px; border-radius: 4px; color: white; font-weight: bold; }
 
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 998; }
 
@@ -133,7 +132,7 @@
             .overlay.active { display: block; }
             .menu-toggle { display: block; }
             .content-body { padding: 12px; }
-            .header-actions button, .header-actions span { font-size: 11px; padding: 6px 8px; }
+            .header-actions button, .header-actions span { font-size: 11px; padding: 5px 7px; }
             #currentPageTitle { font-size: 15px; }
 
             table, thead, tbody, th, td, tr { display: block; }
@@ -190,12 +189,12 @@
                 <h3 id="currentPageTitle">📊 ড্যাশবোর্ড</h3>
             </div>
             <div class="header-actions">
-                <span class="status-badge" id="syncStatus">🔄</span>
-                <button class="btn btn-warning" onclick="toggleDarkMode()">🌙</button>
-                <button class="btn btn-print" onclick="downloadBackup()">📥</button>
-                <button class="btn btn-warning" onclick="document.getElementById('restoreInput').click()">📤</button>
+                <span class="status-badge" id="syncStatus">অনলাইন</span>
+                <button class="btn btn-warning" onclick="toggleDarkMode()">ডার্ক মোড</button>
+                <button class="btn btn-print" onclick="downloadBackup()">ব্যাকআপ</button>
+                <button class="btn btn-warning" onclick="document.getElementById('restoreInput').click()">রিস্টোর</button>
                 <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
-                <button class="btn btn-danger" onclick="checkAdminPin(resetData)">🗑️</button>
+                <button class="btn btn-danger" onclick="checkAdminPin(resetData)">রিসেট</button>
             </div>
         </div>
 
@@ -442,92 +441,14 @@
     </div>
 </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBedSHd_vT2J8QBbOID3I08h3x2TWJDUo4",
-      authDomain: "ekta-group-f31e6.firebaseapp.com",
-      databaseURL: "https://ekta-group-f31e6-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "ekta-group-f31e6",
-      storageBucket: "ekta-group-f31e6.firebasestorage.app",
-      messagingSenderId: "586386812707",
-      appId: "1:586386812707:web:1de15baefe8b8945a9a696"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
-
-    signInAnonymously(auth).then(() => {
-        console.log("Firebase Auth কানেক্টেড");
-    }).catch((error) => console.error("Auth সমস্যা:", error));
-
+<!-- Global Data & Application Core Scripts -->
+<script>
     window.adminPin = "R@-423166y";
     window.members = [];
     window.mortgages = [];
     window.expenses = [];
     window.bankTxns = [];
     window.annualIncomes = [];
-
-    // LocalStorage Sync for Offline Support
-    function loadOfflineData() {
-        let cached = localStorage.getItem('samity_cache');
-        if(cached) {
-            let data = JSON.parse(cached);
-            window.members = data.members || [];
-            window.mortgages = data.mortgages || [];
-            window.expenses = data.expenses || [];
-            window.bankTxns = data.bankTxns || [];
-            window.annualIncomes = data.annualIncomes || [];
-            renderUI();
-        }
-    }
-    loadOfflineData();
-
-    const dbRef = ref(db, 'samity_data');
-    onValue(dbRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            window.members = data.members || [];
-            window.mortgages = data.mortgages || [];
-            window.expenses = data.expenses || [];
-            window.bankTxns = data.bankTxns || [];
-            window.annualIncomes = data.annualIncomes || [];
-            localStorage.setItem('samity_cache', JSON.stringify(data));
-        }
-        document.getElementById('syncStatus').innerText = "🟢";
-        renderUI();
-    }, (error) => {
-        document.getElementById('syncStatus').innerText = "🔴 (Offline)";
-    });
-
-    window.saveData = function() {
-        let payload = {
-            members: window.members,
-            mortgages: window.mortgages,
-            expenses: window.expenses,
-            bankTxns: window.bankTxns,
-            annualIncomes: window.annualIncomes
-        };
-        localStorage.setItem('samity_cache', JSON.stringify(payload));
-        
-        if (navigator.onLine) {
-            document.getElementById('syncStatus').innerText = "🔄";
-            set(ref(db, 'samity_data'), payload).then(() => {
-                document.getElementById('syncStatus').innerText = "🟢";
-            }).catch(() => {
-                document.getElementById('syncStatus').innerText = "🔴";
-            });
-        } else {
-            document.getElementById('syncStatus').innerText = "🔴 (Saved Offline)";
-        }
-    }
-</script>
-
-<script>
     let myChart = null;
 
     function parseNum(val) {
@@ -562,10 +483,23 @@
 
     function checkAdminPin(callback) {
         let pin = prompt("পাসওয়ার্ড দিন:");
-        if (pin === "R@-423166y") {
+        if (pin === window.adminPin) {
             callback();
         } else if (pin !== null) {
             alert("ভুল পাসওয়ার্ড!");
+        }
+    }
+
+    function loadLocalStorage() {
+        let cached = localStorage.getItem('samity_cache');
+        if(cached) {
+            let data = JSON.parse(cached);
+            window.members = data.members || [];
+            window.mortgages = data.mortgages || [];
+            window.expenses = data.expenses || [];
+            window.bankTxns = data.bankTxns || [];
+            window.annualIncomes = data.annualIncomes || [];
+            renderUI();
         }
     }
 
@@ -592,7 +526,7 @@
                 photo: imgData
             };
             window.members.push(member);
-            window.saveData();
+            if(window.saveData) window.saveData();
             alert("নিবন্ধন সফল!");
             document.querySelectorAll('#page-add-member input[type="text"]').forEach(i => i.value = '');
         };
@@ -613,7 +547,7 @@
             window.members[idx].savings = (window.members[idx].savings || 0) + amount;
             let m = window.members[idx];
             showReceipt("মাসিক সঞ্চয় জমা", m.name, amount, m.mobile, m.savings);
-            window.saveData();
+            if(window.saveData) window.saveData();
         }
     }
 
@@ -624,7 +558,7 @@
             window.members[idx].loan = (window.members[idx].loan || 0) + amount;
             let m = window.members[idx];
             showReceipt("ঋণ প্রদান", m.name, amount, m.mobile, m.loan, true);
-            window.saveData();
+            if(window.saveData) window.saveData();
         }
     }
 
@@ -639,7 +573,7 @@
                 amount: amount,
                 date: document.getElementById('mgDate').value || new Date().toISOString().split('T')[0]
             });
-            window.saveData();
+            if(window.saveData) window.saveData();
         }
     }
 
@@ -652,7 +586,7 @@
                 amount: amount,
                 date: document.getElementById('expDate').value || new Date().toISOString().split('T')[0]
             });
-            window.saveData();
+            if(window.saveData) window.saveData();
         }
     }
 
@@ -667,7 +601,7 @@
                 amount: amount,
                 date: document.getElementById('bankDate').value || new Date().toISOString().split('T')[0]
             });
-            window.saveData();
+            if(window.saveData) window.saveData();
         }
     }
 
@@ -681,15 +615,15 @@
                 source: source,
                 amount: amount
             });
-            window.saveData();
+            if(window.saveData) window.saveData();
         }
     }
 
-    function deleteMember(idx) { window.members.splice(idx, 1); window.saveData(); }
-    function deleteMortgage(idx) { window.mortgages.splice(idx, 1); window.saveData(); }
-    function deleteExpense(idx) { window.expenses.splice(idx, 1); window.saveData(); }
-    function deleteBankTxn(idx) { window.bankTxns.splice(idx, 1); window.saveData(); }
-    function deleteAnnualIncome(idx) { window.annualIncomes.splice(idx, 1); window.saveData(); }
+    function deleteMember(idx) { window.members.splice(idx, 1); if(window.saveData) window.saveData(); }
+    function deleteMortgage(idx) { window.mortgages.splice(idx, 1); if(window.saveData) window.saveData(); }
+    function deleteExpense(idx) { window.expenses.splice(idx, 1); if(window.saveData) window.saveData(); }
+    function deleteBankTxn(idx) { window.bankTxns.splice(idx, 1); if(window.saveData) window.saveData(); }
+    function deleteAnnualIncome(idx) { window.annualIncomes.splice(idx, 1); if(window.saveData) window.saveData(); }
 
     function renderUI() {
         let searchQuery = (document.getElementById('searchBox')?.value || '').toLowerCase();
@@ -730,32 +664,40 @@
                 `;
             }
         });
-        document.getElementById('memberTable').innerHTML = memberTableHtml;
-        document.getElementById('loanListTable').innerHTML = loanListTableHtml || '<tr><td colspan="4" style="text-align:center;">কোনো সক্রিয় ঋণ নেই</td></tr>';
+        
+        let mTable = document.getElementById('memberTable');
+        if(mTable) mTable.innerHTML = memberTableHtml;
+        
+        let lTable = document.getElementById('loanListTable');
+        if(lTable) lTable.innerHTML = loanListTableHtml || '<tr><td colspan="4" style="text-align:center;">কোনো সক্রিয় ঋণ নেই</td></tr>';
 
         let mortgageTableHtml = '';
         (window.mortgages || []).forEach((m, idx) => {
             mortgageTableHtml += `<tr><td>${m.date}</td><td>${m.name}</td><td>${m.phone}</td><td>${m.land}</td><td>${m.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteMortgage(${idx}))">মুছুন</button></td></tr>`;
         });
-        document.getElementById('mortgageTable').innerHTML = mortgageTableHtml;
+        let mgTable = document.getElementById('mortgageTable');
+        if(mgTable) mgTable.innerHTML = mortgageTableHtml;
 
         let expenseTableHtml = '';
         (window.expenses || []).forEach((e, idx) => {
             expenseTableHtml += `<tr><td>${e.date}</td><td>${e.title}</td><td>${e.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteExpense(${idx}))">মুছুন</button></td></tr>`;
         });
-        document.getElementById('expenseTable').innerHTML = expenseTableHtml;
+        let expTable = document.getElementById('expenseTable');
+        if(expTable) expTable.innerHTML = expenseTableHtml;
 
         let bankTableHtml = '';
         (window.bankTxns || []).forEach((b, idx) => {
             bankTableHtml += `<tr><td>${b.date}</td><td>${b.type === 'deposit' ? 'জমা' : 'উত্তোলন'}</td><td>${b.ref}</td><td>${b.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteBankTxn(${idx}))">মুছুন</button></td></tr>`;
         });
-        document.getElementById('bankTable').innerHTML = bankTableHtml;
+        let bkTable = document.getElementById('bankTable');
+        if(bkTable) bkTable.innerHTML = bankTableHtml;
 
         let annualIncomeTableHtml = '';
         (window.annualIncomes || []).forEach((a, idx) => {
             annualIncomeTableHtml += `<tr><td>${a.year}</td><td>${a.source}</td><td>${a.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteAnnualIncome(${idx}))">মুছুন</button></td></tr>`;
         });
-        document.getElementById('annualIncomeTable').innerHTML = annualIncomeTableHtml;
+        let aiTable = document.getElementById('annualIncomeTable');
+        if(aiTable) aiTable.innerHTML = annualIncomeTableHtml;
 
         let totalMortgages = (window.mortgages || []).reduce((sum, m) => sum + m.amount, 0);
         let totalExpenses = (window.expenses || []).reduce((sum, e) => sum + e.amount, 0);
@@ -763,23 +705,25 @@
         let abBankBalance = (window.bankTxns || []).reduce((sum, b) => b.type === 'deposit' ? sum + b.amount : sum - b.amount, 0);
         let netBalance = (totalSavings + totalAnnualIncome) - (totalLoans + totalMortgages + totalExpenses);
 
-        document.getElementById('totalSavings').innerText = totalSavings + ' টাকা';
-        document.getElementById('totalLoans').innerText = totalLoans + ' টাকা';
-        document.getElementById('totalMortgages').innerText = totalMortgages + ' টাকা';
-        document.getElementById('totalExpenses').innerText = totalExpenses + ' টাকা';
-        document.getElementById('abBankBalance').innerText = abBankBalance + ' টাকা';
-        document.getElementById('totalAnnualIncome').innerText = totalAnnualIncome + ' টাকা';
-        document.getElementById('netBalance').innerText = netBalance + ' টাকা';
+        if(document.getElementById('totalSavings')) document.getElementById('totalSavings').innerText = totalSavings + ' টাকা';
+        if(document.getElementById('totalLoans')) document.getElementById('totalLoans').innerText = totalLoans + ' টাকা';
+        if(document.getElementById('totalMortgages')) document.getElementById('totalMortgages').innerText = totalMortgages + ' টাকা';
+        if(document.getElementById('totalExpenses')) document.getElementById('totalExpenses').innerText = totalExpenses + ' টাকা';
+        if(document.getElementById('abBankBalance')) document.getElementById('abBankBalance').innerText = abBankBalance + ' টাকা';
+        if(document.getElementById('totalAnnualIncome')) document.getElementById('totalAnnualIncome').innerText = totalAnnualIncome + ' টাকা';
+        if(document.getElementById('netBalance')) document.getElementById('netBalance').innerText = netBalance + ' টাকা';
 
         let memberOptions = (window.members || []).map((m, idx) => `<option value="${idx}">${m.name}</option>`).join('');
-        document.getElementById('depositMemberSelect').innerHTML = memberOptions || '<option value="">কোনো সদস্য নেই</option>';
-        document.getElementById('loanMemberSelect').innerHTML = memberOptions || '<option value="">কোনো সদস্য নেই</option>';
+        if(document.getElementById('depositMemberSelect')) document.getElementById('depositMemberSelect').innerHTML = memberOptions || '<option value="">কোনো সদস্য নেই</option>';
+        if(document.getElementById('loanMemberSelect')) document.getElementById('loanMemberSelect').innerHTML = memberOptions || '<option value="">কোনো সদস্য নেই</option>';
 
         updateChart(totalSavings, totalLoans, totalMortgages, totalExpenses, totalAnnualIncome);
     }
 
     function updateChart(savings, loans, mortgages, expenses, income) {
-        const ctx = document.getElementById('financeChart').getContext('2d');
+        const canvas = document.getElementById('financeChart');
+        if(!canvas) return;
+        const ctx = canvas.getContext('2d');
         if (myChart) myChart.destroy();
         myChart = new Chart(ctx, {
             type: 'bar',
@@ -795,7 +739,6 @@
         });
     }
 
-    /* Advanced Reports & Export Functions */
     function exportToExcel(type) {
         let data = [];
         if (type === 'members') {
@@ -911,7 +854,7 @@
                 window.expenses = data.expenses || [];
                 window.bankTxns = data.bankTxns || [];
                 window.annualIncomes = data.annualIncomes || [];
-                window.saveData();
+                if(window.saveData) window.saveData();
                 alert("ব্যাকআপ রিস্টোর সফল!");
             } catch(err) { alert("ভুল ফাইল ফরম্যাট!"); }
         };
@@ -921,32 +864,83 @@
     function resetData() {
         if (confirm("ডাটাবেজ খালি করতে চান?")) {
             window.members = []; window.mortgages = []; window.expenses = []; window.bankTxns = []; window.annualIncomes = [];
-            window.saveData();
+            if(window.saveData) window.saveData();
         }
     }
 
-    // PWA Service Worker Registration & Cache
-    if ('serviceWorker' in navigator) {
-        const swCode = `
-            const CACHE_NAME = 'samity-v1';
-            self.addEventListener('install', e => {
-                e.waitUntil(
-                    caches.open(CACHE_NAME).then(cache => {
-                        return cache.addAll(['./']);
-                    })
-                );
+    document.addEventListener('DOMContentLoaded', () => {
+        loadLocalStorage();
+        let today = new Date().toISOString().split('T')[0];
+        ['depositDate', 'loanDate', 'mgDate', 'expDate', 'bankDate'].forEach(id => {
+            let elem = document.getElementById(id);
+            if (elem) elem.value = today;
+        });
+    });
+</script>
+
+<!-- Firebase Connection via Standard JS Modules -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBedSHd_vT2J8QBbOID3I08h3x2TWJDUo4",
+      authDomain: "ekta-group-f31e6.firebaseapp.com",
+      databaseURL: "https://ekta-group-f31e6-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "ekta-group-f31e6",
+      storageBucket: "ekta-group-f31e6.firebasestorage.app",
+      messagingSenderId: "586386812707",
+      appId: "1:586386812707:web:1de15baefe8b8945a9a696"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    signInAnonymously(auth).then(() => {
+        console.log("Firebase Auth কানেক্টেড");
+    }).catch(err => console.log("Auth error:", err));
+
+    const dbRef = ref(db, 'samity_data');
+    onValue(dbRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            window.members = data.members || [];
+            window.mortgages = data.mortgages || [];
+            window.expenses = data.expenses || [];
+            window.bankTxns = data.bankTxns || [];
+            window.annualIncomes = data.annualIncomes || [];
+            localStorage.setItem('samity_cache', JSON.stringify(data));
+        }
+        let statusEl = document.getElementById('syncStatus');
+        if(statusEl) statusEl.innerText = "অনলাইন";
+        if(typeof renderUI === 'function') renderUI();
+    }, (error) => {
+        let statusEl = document.getElementById('syncStatus');
+        if(statusEl) statusEl.innerText = "অফলাইন";
+    });
+
+    window.saveData = function() {
+        let payload = {
+            members: window.members,
+            mortgages: window.mortgages,
+            expenses: window.expenses,
+            bankTxns: window.bankTxns,
+            annualIncomes: window.annualIncomes
+        };
+        localStorage.setItem('samity_cache', JSON.stringify(payload));
+        
+        let statusEl = document.getElementById('syncStatus');
+        if (navigator.onLine) {
+            if(statusEl) statusEl.innerText = "সেভ হচ্ছে...";
+            set(ref(db, 'samity_data'), payload).then(() => {
+                if(statusEl) statusEl.innerText = "অনলাইন";
+            }).catch(() => {
+                if(statusEl) statusEl.innerText = "অফলাইন";
             });
-            self.addEventListener('fetch', e => {
-                e.respondWith(
-                    caches.match(e.request).then(response => {
-                        return response || fetch(e.request);
-                    })
-                );
-            });
-        `;
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        navigator.serviceWorker.register(swUrl).catch(err => console.log('PWA Service Worker Error:', err));
+        }
+        if(typeof renderUI === 'function') renderUI();
     }
 </script>
 </body>
