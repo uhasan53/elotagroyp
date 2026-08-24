@@ -544,7 +544,31 @@
         for (let i = 0; i < 10; i++) {
             str = str.replace(new RegExp(bnNums[i], 'g'), i);
         }
-        return parseFloat(str) || 0;
+        return parseFloat(str.replace(/,/g, '')) || 0;
+    }
+
+    // সংখ্যাকে বাংলা সংখ্যায় এবং কমা যুক্ত করার ফাংশন
+    function formatBnNum(num) {
+        if (num === null || num === undefined || isNaN(num)) return '০';
+        let nStr = Math.round(num).toString();
+        let isNeg = false;
+        if (nStr.startsWith('-')) {
+            isNeg = true;
+            nStr = nStr.substring(1);
+        }
+        
+        // বাংলাদেশি ফরম্যাটে কমা (যেমন: ১,৫০,০০০)
+        let lastThree = nStr.substring(nStr.length - 3);
+        let otherNumbers = nStr.substring(0, nStr.length - 3);
+        if (otherNumbers !== '') {
+            lastThree = ',' + lastThree;
+        }
+        let formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+        if (isNeg) formatted = '-' + formatted;
+
+        // ইংরেজি সংখ্যাকে বাংলায় কনভার্ট
+        let bnNums = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        return formatted.replace(/\d/g, d => bnNums[d]);
     }
 
     function toggleSidebar() {
@@ -600,7 +624,6 @@
         }
     }
 
-    // Image Resizer to prevent Storage limits
     function resizeImage(file, callback) {
         let reader = new FileReader();
         reader.onload = function(e) {
@@ -751,14 +774,14 @@
             if (m.name.toLowerCase().includes(searchQuery) || (m.mobile && m.mobile.includes(searchQuery))) {
                 memberTableHtml += `
                     <tr>
-                        <td>${index + 1}</td>
+                        <td>${formatBnNum(index + 1)}</td>
                         <td><img src="${m.photo || 'https://via.placeholder.com/40'}" class="thumb"></td>
                         <td><b>${m.name}</b><br><span class="badge">${m.role || 'সদস্য'}</span></td>
                         <td>পিতা: ${m.father || 'N/A'}</td>
                         <td>${m.mobile || ''}</td>
                         <td>${m.nid || ''}</td>
                         <td>${m.nominee || ''} (${m.relation || ''})</td>
-                        <td>সঞ্চয়: <b>${m.savings || 0}</b><br>ঋণ: <span style="color:red;"><b>${m.loan || 0}</b></span></td>
+                        <td>সঞ্চয়: <b>${formatBnNum(m.savings || 0)} টাকা</b><br>ঋণ: <span style="color:red;"><b>${formatBnNum(m.loan || 0)} টাকা</b></span></td>
                         <td><button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="checkAdminPin(() => deleteMember(${index}))">মুছুন</button></td>
                     </tr>
                 `;
@@ -766,12 +789,12 @@
 
             rptMembersHtml += `
                 <tr>
-                    <td>${index + 1}</td>
+                    <td>${formatBnNum(index + 1)}</td>
                     <td><b>${m.name}</b></td>
                     <td>${m.role || 'সদস্য'}</td>
                     <td>${m.mobile || 'N/A'}</td>
-                    <td><b style="color:#27ae60;">${m.savings || 0} টাকা</b></td>
-                    <td><b style="color:#e74c3c;">${m.loan || 0} টাকা</b></td>
+                    <td><b style="color:#27ae60;">${formatBnNum(m.savings || 0)} টাকা</b></td>
+                    <td><b style="color:#e74c3c;">${formatBnNum(m.loan || 0)} টাকা</b></td>
                 </tr>
             `;
 
@@ -779,10 +802,10 @@
                 loanCount++;
                 loanListTableHtml += `
                     <tr>
-                        <td>${loanCount}</td>
+                        <td>${formatBnNum(loanCount)}</td>
                         <td><b>${m.name}</b></td>
                         <td>${m.mobile || 'N/A'}</td>
-                        <td><b style="color:red;">${m.loan} টাকা</b></td>
+                        <td><b style="color:red;">${formatBnNum(m.loan)} টাকা</b></td>
                     </tr>
                 `;
             }
@@ -800,7 +823,7 @@
         let mortgageTableHtml = '';
         let rptMortgagesHtml = '';
         (window.mortgages || []).forEach((m, idx) => {
-            let row = `<tr><td>${m.date}</td><td>${m.name}</td><td>${m.phone}</td><td>${m.land}</td><td>${m.amount} টাকা</td>`;
+            let row = `<tr><td>${m.date}</td><td>${m.name}</td><td>${m.phone}</td><td>${m.land}</td><td>${formatBnNum(m.amount)} টাকা</td>`;
             mortgageTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteMortgage(${idx}))">মুছুন</button></td></tr>`;
             rptMortgagesHtml += `${row}</tr>`;
         });
@@ -812,7 +835,7 @@
         let expenseTableHtml = '';
         let rptExpensesHtml = '';
         (window.expenses || []).forEach((e, idx) => {
-            let row = `<tr><td>${e.date}</td><td>${e.title}</td><td>${e.amount} টাকা</td>`;
+            let row = `<tr><td>${e.date}</td><td>${e.title}</td><td>${formatBnNum(e.amount)} টাকা</td>`;
             expenseTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteExpense(${idx}))">মুছুন</button></td></tr>`;
             rptExpensesHtml += `${row}</tr>`;
         });
@@ -824,7 +847,7 @@
         let bankTableHtml = '';
         let rptBankHtml = '';
         (window.bankTxns || []).forEach((b, idx) => {
-            let row = `<tr><td>${b.date}</td><td>${b.type === 'deposit' ? 'জমা' : 'উত্তোলন'}</td><td>${b.ref}</td><td>${b.amount} টাকা</td>`;
+            let row = `<tr><td>${b.date}</td><td>${b.type === 'deposit' ? 'জমা' : 'উত্তোলন'}</td><td>${b.ref}</td><td>${formatBnNum(b.amount)} টাকা</td>`;
             bankTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteBankTxn(${idx}))">মুছুন</button></td></tr>`;
             rptBankHtml += `${row}</tr>`;
         });
@@ -836,7 +859,7 @@
         let annualIncomeTableHtml = '';
         let rptIncomeHtml = '';
         (window.annualIncomes || []).forEach((a, idx) => {
-            let row = `<tr><td>${a.year}</td><td>${a.source}</td><td>${a.amount} টাকা</td>`;
+            let row = `<tr><td>${formatBnNum(a.year)}</td><td>${a.source}</td><td>${formatBnNum(a.amount)} টাকা</td>`;
             annualIncomeTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteAnnualIncome(${idx}))">মুছুন</button></td></tr>`;
             rptIncomeHtml += `${row}</tr>`;
         });
@@ -851,21 +874,21 @@
         let abBankBalance = (window.bankTxns || []).reduce((sum, b) => b.type === 'deposit' ? sum + b.amount : sum - b.amount, 0);
         let netBalance = (totalSavings + totalAnnualIncome) - (totalLoans + totalMortgages + totalExpenses);
 
-        if(document.getElementById('totalSavings')) document.getElementById('totalSavings').innerText = totalSavings + ' টাকা';
-        if(document.getElementById('totalLoans')) document.getElementById('totalLoans').innerText = totalLoans + ' টাকা';
-        if(document.getElementById('totalMortgages')) document.getElementById('totalMortgages').innerText = totalMortgages + ' টাকা';
-        if(document.getElementById('totalExpenses')) document.getElementById('totalExpenses').innerText = totalExpenses + ' টাকা';
-        if(document.getElementById('abBankBalance')) document.getElementById('abBankBalance').innerText = abBankBalance + ' টাকা';
-        if(document.getElementById('totalAnnualIncome')) document.getElementById('totalAnnualIncome').innerText = totalAnnualIncome + ' টাকা';
-        if(document.getElementById('netBalance')) document.getElementById('netBalance').innerText = netBalance + ' টাকা';
+        if(document.getElementById('totalSavings')) document.getElementById('totalSavings').innerText = formatBnNum(totalSavings) + ' টাকা';
+        if(document.getElementById('totalLoans')) document.getElementById('totalLoans').innerText = formatBnNum(totalLoans) + ' টাকা';
+        if(document.getElementById('totalMortgages')) document.getElementById('totalMortgages').innerText = formatBnNum(totalMortgages) + ' টাকা';
+        if(document.getElementById('totalExpenses')) document.getElementById('totalExpenses').innerText = formatBnNum(totalExpenses) + ' টাকা';
+        if(document.getElementById('abBankBalance')) document.getElementById('abBankBalance').innerText = formatBnNum(abBankBalance) + ' টাকা';
+        if(document.getElementById('totalAnnualIncome')) document.getElementById('totalAnnualIncome').innerText = formatBnNum(totalAnnualIncome) + ' টাকা';
+        if(document.getElementById('netBalance')) document.getElementById('netBalance').innerText = formatBnNum(netBalance) + ' টাকা';
 
-        if(document.getElementById('rptTotalSavings')) document.getElementById('rptTotalSavings').innerText = totalSavings + ' টাকা';
-        if(document.getElementById('rptTotalLoans')) document.getElementById('rptTotalLoans').innerText = totalLoans + ' টাকা';
-        if(document.getElementById('rptTotalMortgages')) document.getElementById('rptTotalMortgages').innerText = totalMortgages + ' টাকা';
-        if(document.getElementById('rptTotalExpenses')) document.getElementById('rptTotalExpenses').innerText = totalExpenses + ' টাকা';
-        if(document.getElementById('rptBankBalance')) document.getElementById('rptBankBalance').innerText = abBankBalance + ' টাকা';
-        if(document.getElementById('rptAnnualIncome')) document.getElementById('rptAnnualIncome').innerText = totalAnnualIncome + ' টাকা';
-        if(document.getElementById('rptNetBalance')) document.getElementById('rptNetBalance').innerText = netBalance + ' টাকা';
+        if(document.getElementById('rptTotalSavings')) document.getElementById('rptTotalSavings').innerText = formatBnNum(totalSavings) + ' টাকা';
+        if(document.getElementById('rptTotalLoans')) document.getElementById('rptTotalLoans').innerText = formatBnNum(totalLoans) + ' টাকা';
+        if(document.getElementById('rptTotalMortgages')) document.getElementById('rptTotalMortgages').innerText = formatBnNum(totalMortgages) + ' টাকা';
+        if(document.getElementById('rptTotalExpenses')) document.getElementById('rptTotalExpenses').innerText = formatBnNum(totalExpenses) + ' টাকা';
+        if(document.getElementById('rptBankBalance')) document.getElementById('rptBankBalance').innerText = formatBnNum(abBankBalance) + ' টাকা';
+        if(document.getElementById('rptAnnualIncome')) document.getElementById('rptAnnualIncome').innerText = formatBnNum(totalAnnualIncome) + ' টাকা';
+        if(document.getElementById('rptNetBalance')) document.getElementById('rptNetBalance').innerText = formatBnNum(netBalance) + ' টাকা';
 
         let memberOptions = (window.members || []).map((m, idx) => `<option value="${idx}">${m.name}</option>`).join('');
         if(document.getElementById('depositMemberSelect')) document.getElementById('depositMemberSelect').innerHTML = memberOptions || '<option value="">কোনো সদস্য নেই</option>';
@@ -901,14 +924,14 @@
                 "পদবী": m.role,
                 "মোবাইল": m.mobile,
                 "NID": m.nid,
-                "মোট সঞ্চয়": m.savings || 0,
-                "মোট ঋণ": m.loan || 0
+                "মোট সঞ্চয়": formatBnNum(m.savings || 0),
+                "মোট ঋণ": formatBnNum(m.loan || 0)
             }));
         } else if (type === 'loans') {
             data = window.members.filter(m => (m.loan || 0) > 0).map(m => ({
                 "নাম": m.name,
                 "মোবাইল": m.mobile,
-                "ঋণের পরিমাণ": m.loan
+                "ঋণের পরিমাণ": formatBnNum(m.loan)
             }));
         }
 
@@ -948,8 +971,8 @@
             <b>তারিখ:</b> ${dateStr}<br>
             <b>সদস্য:</b> ${name}<br>
             <b>লেনদেন:</b> ${type}<br>
-            <b>পরিমাণ:</b> ${amount} টাকা<br>
-            <b>বর্তমান মোট ${isLoan ? 'ঋণ' : 'সঞ্চয়'}:</b> ${totalBalance} টাকা
+            <b>পরিমাণ:</b> ${formatBnNum(amount)} টাকা<br>
+            <b>বর্তমান মোট ${isLoan ? 'ঋণ' : 'সঞ্চয়'}:</b> ${formatBnNum(totalBalance)} টাকা
         `;
 
         let waBtn = document.getElementById('whatsappBtn');
@@ -970,8 +993,8 @@
                       `----------------------------------%0A` +
                       `👤 *সদস্য:* ${memberName}%0A` +
                       `📝 *লেনদেন:* ${type}%0A` +
-                      `💵 *পরিমাণ:* ${amount} টাকা%0A` +
-                      `💰 *বর্তমান মোট ${isLoan ? 'ঋণ' : 'সঞ্চয়'}:* ${totalBalance} টাকা%0A` +
+                      `💵 *পরিমাণ:* ${formatBnNum(amount)} টাকা%0A` +
+                      `💰 *বর্তমান মোট ${isLoan ? 'ঋণ' : 'সঞ্চয়'}:* ${formatBnNum(totalBalance)} টাকা%0A` +
                       `📅 *তারিখ:* ${dateStr}%0A%0A` +
                       `ধন্যবাদ আমাদের সাথে থাকার জন্য।`;
 
