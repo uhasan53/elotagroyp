@@ -102,7 +102,7 @@
 
         .chart-box { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); height: 320px; margin-bottom: 20px; }
 
-        .form-card { background: var(--card-bg); padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 800px; }
+        .form-card { background: var(--card-bg); padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 100%; }
         .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
         .form-row input, .form-row select { padding: 9px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); border-radius: 4px; flex: 1; min-width: 100%; font-size: 14px; }
         
@@ -117,7 +117,7 @@
         .btn-whatsapp { background: #25D366; color: white; }
         .btn-excel { background: #1f7244; color: white; }
 
-        table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 13px; }
+        table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-size: 13px; margin-bottom: 15px; }
         th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; }
         th { background: rgba(0,0,0,0.03); color: var(--text-color); }
         .badge { background: #3498db; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
@@ -125,6 +125,9 @@
         .status-badge { font-size: 11px; background: #27ae60; padding: 4px 8px; border-radius: 4px; color: white; font-weight: bold; }
 
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 998; }
+
+        .report-section { margin-bottom: 25px; }
+        .report-section h4 { margin-bottom: 8px; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 3px; }
 
         @media (max-width: 768px) {
             .sidebar { position: fixed; left: -260px; top: 0; bottom: 0; }
@@ -237,17 +240,123 @@
                 </div>
             </div>
 
-            <!-- PAGE 2: ADVANCED REPORTS -->
+            <!-- PAGE 2: ADVANCED REPORTS (UPDATED DETAILED SCREEN) -->
             <div id="page-reports" class="page-module">
-                <div class="form-card" style="max-width: 100%; margin-bottom: 20px;">
-                    <h3>📊 রিপোর্টস এবং ফাইল এক্সপোর্ট</h3>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">আপনার হিসাবের বিস্তারিত Excel বা PDF ফরম্যাটে ডাউনলোড করুন।</p>
+                <div class="form-card" style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 8px;">📊 সমিতির পূর্ণাঙ্গ অ্যাডভান্সড রিপোর্ট</h3>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">সকল হিসাবের সার্বিক চিত্র ও বিশদ বিবরণ এক নজরে নিচে দেখে নিন অথবা ফাইল আকারে ডাউনলোড করুন।</p>
                     
                     <div class="form-row">
-                        <button class="btn btn-excel" onclick="exportToExcel('members')">📗 সদস্য তালিকা Excel (CSV)</button>
-                        <button class="btn btn-excel" onclick="exportToExcel('loans')">📗 ঋণের তালিকা Excel (CSV)</button>
-                        <button class="btn btn-print" onclick="exportToPDF()">📕 সম্পূর্ণ ব্যালেন্স শীট (PDF)</button>
+                        <button class="btn btn-excel" onclick="exportToExcel('members')">📗 সদস্য তালিকা Excel</button>
+                        <button class="btn btn-excel" onclick="exportToExcel('loans')">📗 ঋণের তালিকা Excel</button>
+                        <button class="btn btn-print" onclick="exportToPDF()">📕 ব্যালেন্স শীট (PDF)</button>
                     </div>
+                </div>
+
+                <!-- 1. সার্বিক হিসাব সারসংক্ষেপ -->
+                <div class="report-section">
+                    <h4>📌 ১. সার্বিক অর্থনৈতিক সারসংক্ষেপ</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>হিসাবের বিবরণ</th>
+                                <th>মোট পরিমাণ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>মোট সংগৃহীত সঞ্চয়</td><td><b id="rptTotalSavings" style="color:#27ae60;">০ টাকা</b></td></tr>
+                            <tr><td>মোট বিতরণকৃত ঋণ</td><td><b id="rptTotalLoans" style="color:#f39c12;">০ টাকা</b></td></tr>
+                            <tr><td>জমি বন্ধক প্রদান</td><td><b id="rptTotalMortgages" style="color:#e74c3c;">০ টাকা</b></td></tr>
+                            <tr><td>সমিতির মোট খরচ</td><td><b id="rptTotalExpenses" style="color:#d35400;">০ টাকা</b></td></tr>
+                            <tr><td>AB Bank বর্তমান স্থিতি</td><td><b id="rptBankBalance" style="color:#8e44ad;">০ টাকা</b></td></tr>
+                            <tr><td>বার্ষিক আয়ের স্থিতি</td><td><b id="rptAnnualIncome" style="color:#16a085;">০ টাকা</b></td></tr>
+                            <tr style="background: rgba(41, 128, 185, 0.1);">
+                                <td><b>অবশিষ্ট সর্বমোট নিট ক্যাশ</b></td>
+                                <td><b id="rptNetBalance" style="color:#2980b9; font-size:15px;">০ টাকা</b></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 2. সদস্য সঞ্চয় ও ঋণ বিস্তারিত -->
+                <div class="report-section">
+                    <h4>👥 ২. সদস্য সঞ্চয় ও ঋণের পূর্ণাঙ্গ রিপোর্ট</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ক্রম</th>
+                                <th>সদস্যের নাম</th>
+                                <th>পদবী</th>
+                                <th>মোবাইল</th>
+                                <th>মোট জমা সঞ্চয়</th>
+                                <th>অবশিষ্ট ঋণ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rptMembersTable"></tbody>
+                    </table>
+                </div>
+
+                <!-- 3. জমি বন্ধক হিসাব -->
+                <div class="report-section">
+                    <h4>🏡 ৩. জমি বন্ধকের হিসাব</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>তারিখ</th>
+                                <th>নাম</th>
+                                <th>ফোন</th>
+                                <th>জমির বিবরণ</th>
+                                <th>টাকার পরিমাণ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rptMortgageTable"></tbody>
+                    </table>
+                </div>
+
+                <!-- 4. সমিতির খরচসমূহ -->
+                <div class="report-section">
+                    <h4>📉 ৪. সমিতির খরচ বিবরণী</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>তারিখ</th>
+                                <th>খরচের খাত</th>
+                                <th>পরিমাণ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rptExpenseTable"></tbody>
+                    </table>
+                </div>
+
+                <!-- 5. ব্যাংক লেনদেন বিস্তারিত -->
+                <div class="report-section">
+                    <h4>🏦 ৫. AB Bank লেনদেন বিবরণী</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>তারিখ</th>
+                                <th>লেনদেনের ধরন</th>
+                                <th>রেফারেন্স / বিবরণ</th>
+                                <th>পরিমাণ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rptBankTable"></tbody>
+                    </table>
+                </div>
+
+                <!-- 6. বার্ষিক আয়ের হিসাব -->
+                <div class="report-section">
+                    <h4>📈 ৬. বার্ষিক আয়ের বিবরণী</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>বছর</th>
+                                <th>উৎস</th>
+                                <th>পরিমাণ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rptAnnualIncomeTable"></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -277,7 +386,7 @@
 
             <!-- PAGE 4: ADD MEMBER -->
             <div id="page-add-member" class="page-module">
-                <div class="form-card">
+                <div class="form-card" style="max-width: 800px;">
                     <h3 style="margin-bottom: 12px;">নতুন সদস্য নিবন্ধন</h3>
                     <div class="form-row">
                         <input type="text" id="mFullName" placeholder="সদস্যের নাম">
@@ -309,7 +418,7 @@
 
             <!-- PAGE 5: DEPOSIT -->
             <div id="page-deposit" class="page-module">
-                <div class="form-card">
+                <div class="form-card" style="max-width: 800px;">
                     <h3 style="margin-bottom: 12px;">মাসিক সঞ্চয় জমা</h3>
                     <div class="form-row">
                         <select id="depositMemberSelect"></select>
@@ -322,7 +431,7 @@
 
             <!-- PAGE 6: LOAN -->
             <div id="page-loan" class="page-module">
-                <div class="form-card">
+                <div class="form-card" style="max-width: 800px;">
                     <h3 style="margin-bottom: 12px;">ঋণ প্রদান</h3>
                     <div class="form-row">
                         <select id="loanMemberSelect"></select>
@@ -351,7 +460,7 @@
 
             <!-- PAGE 8: MORTGAGE -->
             <div id="page-mortgage" class="page-module">
-                <div class="form-card" style="margin-bottom: 15px;">
+                <div class="form-card" style="margin-bottom: 15px; max-width: 800px;">
                     <h3 style="margin-bottom: 12px;">নতুন জমি বন্ধক</h3>
                     <div class="form-row">
                         <input type="text" id="mgName" placeholder="বন্ধকদাতার নাম">
@@ -370,7 +479,7 @@
 
             <!-- PAGE 9: EXPENSE -->
             <div id="page-expense" class="page-module">
-                <div class="form-card" style="margin-bottom: 15px;">
+                <div class="form-card" style="margin-bottom: 15px; max-width: 800px;">
                     <h3 style="margin-bottom: 12px;">সমিতির খরচ</h3>
                     <div class="form-row">
                         <input type="text" id="expTitle" placeholder="খরচের খাত">
@@ -387,7 +496,7 @@
 
             <!-- PAGE 10: BANK -->
             <div id="page-bank" class="page-module">
-                <div class="form-card" style="margin-bottom: 15px;">
+                <div class="form-card" style="margin-bottom: 15px; max-width: 800px;">
                     <h3 style="margin-bottom: 12px;">AB Bank লেনদেন</h3>
                     <div class="form-row">
                         <select id="bankType">
@@ -408,7 +517,7 @@
 
             <!-- PAGE 11: ANNUAL INCOME -->
             <div id="page-annual-income" class="page-module">
-                <div class="form-card" style="margin-bottom: 15px;">
+                <div class="form-card" style="margin-bottom: 15px; max-width: 800px;">
                     <h3 style="margin-bottom: 12px;">বার্ষিক আয়ের হিসাব</h3>
                     <div class="form-row">
                         <input type="text" id="incYear" placeholder="বছর (যেমন: ২০২৬)">
@@ -628,6 +737,7 @@
     function renderUI() {
         let searchQuery = (document.getElementById('searchBox')?.value || '').toLowerCase();
         let memberTableHtml = '';
+        let rptMembersHtml = '';
         let loanListTableHtml = '';
         let totalSavings = 0, totalLoans = 0;
         let loanCount = 0;
@@ -652,6 +762,17 @@
                 `;
             }
 
+            rptMembersHtml += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><b>${m.name}</b></td>
+                    <td>${m.role || 'সদস্য'}</td>
+                    <td>${m.mobile || 'N/A'}</td>
+                    <td><b style="color:#27ae60;">${m.savings || 0} টাকা</b></td>
+                    <td><b style="color:#e74c3c;">${m.loan || 0} টাকা</b></td>
+                </tr>
+            `;
+
             if ((m.loan || 0) > 0) {
                 loanCount++;
                 loanListTableHtml += `
@@ -668,36 +789,59 @@
         let mTable = document.getElementById('memberTable');
         if(mTable) mTable.innerHTML = memberTableHtml;
         
+        let rptMTable = document.getElementById('rptMembersTable');
+        if(rptMTable) rptMTable.innerHTML = rptMembersHtml || '<tr><td colspan="6" style="text-align:center;">কোনো সদস্যের রেকর্ড নেই</td></tr>';
+
         let lTable = document.getElementById('loanListTable');
         if(lTable) lTable.innerHTML = loanListTableHtml || '<tr><td colspan="4" style="text-align:center;">কোনো সক্রিয় ঋণ নেই</td></tr>';
 
         let mortgageTableHtml = '';
+        let rptMortgagesHtml = '';
         (window.mortgages || []).forEach((m, idx) => {
-            mortgageTableHtml += `<tr><td>${m.date}</td><td>${m.name}</td><td>${m.phone}</td><td>${m.land}</td><td>${m.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteMortgage(${idx}))">মুছুন</button></td></tr>`;
+            let row = `<tr><td>${m.date}</td><td>${m.name}</td><td>${m.phone}</td><td>${m.land}</td><td>${m.amount} টাকা</td>`;
+            mortgageTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteMortgage(${idx}))">মুছুন</button></td></tr>`;
+            rptMortgagesHtml += `${row}</tr>`;
         });
         let mgTable = document.getElementById('mortgageTable');
         if(mgTable) mgTable.innerHTML = mortgageTableHtml;
+        let rptMgTable = document.getElementById('rptMortgageTable');
+        if(rptMgTable) rptMgTable.innerHTML = rptMortgagesHtml || '<tr><td colspan="5" style="text-align:center;">কোনো বন্ধকী রেকর্ড নেই</td></tr>';
 
         let expenseTableHtml = '';
+        let rptExpensesHtml = '';
         (window.expenses || []).forEach((e, idx) => {
-            expenseTableHtml += `<tr><td>${e.date}</td><td>${e.title}</td><td>${e.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteExpense(${idx}))">মুছুন</button></td></tr>`;
+            let row = `<tr><td>${e.date}</td><td>${e.title}</td><td>${e.amount} টাকা</td>`;
+            expenseTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteExpense(${idx}))">মুছুন</button></td></tr>`;
+            rptExpensesHtml += `${row}</tr>`;
         });
         let expTable = document.getElementById('expenseTable');
         if(expTable) expTable.innerHTML = expenseTableHtml;
+        let rptExpTable = document.getElementById('rptExpenseTable');
+        if(rptExpTable) rptExpTable.innerHTML = rptExpensesHtml || '<tr><td colspan="3" style="text-align:center;">কোনো খরচের এন্ট্রি নেই</td></tr>';
 
         let bankTableHtml = '';
+        let rptBankHtml = '';
         (window.bankTxns || []).forEach((b, idx) => {
-            bankTableHtml += `<tr><td>${b.date}</td><td>${b.type === 'deposit' ? 'জমা' : 'উত্তোলন'}</td><td>${b.ref}</td><td>${b.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteBankTxn(${idx}))">মুছুন</button></td></tr>`;
+            let row = `<tr><td>${b.date}</td><td>${b.type === 'deposit' ? 'জমা' : 'উত্তোলন'}</td><td>${b.ref}</td><td>${b.amount} টাকা</td>`;
+            bankTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteBankTxn(${idx}))">মুছুন</button></td></tr>`;
+            rptBankHtml += `${row}</tr>`;
         });
         let bkTable = document.getElementById('bankTable');
         if(bkTable) bkTable.innerHTML = bankTableHtml;
+        let rptBkTable = document.getElementById('rptBankTable');
+        if(rptBkTable) rptBkTable.innerHTML = rptBankHtml || '<tr><td colspan="4" style="text-align:center;">কোনো ব্যাংক লেনদেনের তথ্য নেই</td></tr>';
 
         let annualIncomeTableHtml = '';
+        let rptIncomeHtml = '';
         (window.annualIncomes || []).forEach((a, idx) => {
-            annualIncomeTableHtml += `<tr><td>${a.year}</td><td>${a.source}</td><td>${a.amount} টাকা</td><td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteAnnualIncome(${idx}))">মুছুন</button></td></tr>`;
+            let row = `<tr><td>${a.year}</td><td>${a.source}</td><td>${a.amount} টাকা</td>`;
+            annualIncomeTableHtml += `${row}<td><button class="btn btn-danger" style="padding:2px 6px;" onclick="checkAdminPin(() => deleteAnnualIncome(${idx}))">মুছুন</button></td></tr>`;
+            rptIncomeHtml += `${row}</tr>`;
         });
         let aiTable = document.getElementById('annualIncomeTable');
         if(aiTable) aiTable.innerHTML = annualIncomeTableHtml;
+        let rptAiTable = document.getElementById('rptAnnualIncomeTable');
+        if(rptAiTable) rptAiTable.innerHTML = rptIncomeHtml || '<tr><td colspan="3" style="text-align:center;">কোনো বার্ষিক আয়ের এন্ট্রি নেই</td></tr>';
 
         let totalMortgages = (window.mortgages || []).reduce((sum, m) => sum + m.amount, 0);
         let totalExpenses = (window.expenses || []).reduce((sum, e) => sum + e.amount, 0);
@@ -705,6 +849,7 @@
         let abBankBalance = (window.bankTxns || []).reduce((sum, b) => b.type === 'deposit' ? sum + b.amount : sum - b.amount, 0);
         let netBalance = (totalSavings + totalAnnualIncome) - (totalLoans + totalMortgages + totalExpenses);
 
+        // Dashboard Elements Update
         if(document.getElementById('totalSavings')) document.getElementById('totalSavings').innerText = totalSavings + ' টাকা';
         if(document.getElementById('totalLoans')) document.getElementById('totalLoans').innerText = totalLoans + ' টাকা';
         if(document.getElementById('totalMortgages')) document.getElementById('totalMortgages').innerText = totalMortgages + ' টাকা';
@@ -712,6 +857,15 @@
         if(document.getElementById('abBankBalance')) document.getElementById('abBankBalance').innerText = abBankBalance + ' টাকা';
         if(document.getElementById('totalAnnualIncome')) document.getElementById('totalAnnualIncome').innerText = totalAnnualIncome + ' টাকা';
         if(document.getElementById('netBalance')) document.getElementById('netBalance').innerText = netBalance + ' টাকা';
+
+        // Advanced Report Summary Elements Update
+        if(document.getElementById('rptTotalSavings')) document.getElementById('rptTotalSavings').innerText = totalSavings + ' টাকা';
+        if(document.getElementById('rptTotalLoans')) document.getElementById('rptTotalLoans').innerText = totalLoans + ' টাকা';
+        if(document.getElementById('rptTotalMortgages')) document.getElementById('rptTotalMortgages').innerText = totalMortgages + ' টাকা';
+        if(document.getElementById('rptTotalExpenses')) document.getElementById('rptTotalExpenses').innerText = totalExpenses + ' টাকা';
+        if(document.getElementById('rptBankBalance')) document.getElementById('rptBankBalance').innerText = abBankBalance + ' টাকা';
+        if(document.getElementById('rptAnnualIncome')) document.getElementById('rptAnnualIncome').innerText = totalAnnualIncome + ' টাকা';
+        if(document.getElementById('rptNetBalance')) document.getElementById('rptNetBalance').innerText = netBalance + ' টাকা';
 
         let memberOptions = (window.members || []).map((m, idx) => `<option value="${idx}">${m.name}</option>`).join('');
         if(document.getElementById('depositMemberSelect')) document.getElementById('depositMemberSelect').innerHTML = memberOptions || '<option value="">কোনো সদস্য নেই</option>';
@@ -850,7 +1004,6 @@
             try {
                 let data = JSON.parse(e.target.result);
 
-                // ফ্লেক্সিবল চেক: ব্যাকআপ ফাইলটি Array নাকি Object ফরম্যাটে আছে তা নির্ধারণ
                 if (Array.isArray(data)) {
                     window.members = data;
                     window.mortgages = [];
